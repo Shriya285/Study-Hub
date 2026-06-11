@@ -65,8 +65,8 @@ function LofiNightBg({ rain }) {
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
       <style>{`
         @keyframes lofiTwinkle {
-          0%, 100% { opacity: var(--star-op); }
-          50% { opacity: calc(var(--star-op) * 0.2); }
+          0%, 100% { filter: brightness(1); }
+          50% { filter: brightness(0.1); }
         }
         @keyframes lofiRain {
           0% { transform: translateY(-60px) translateX(0) rotate(15deg); }
@@ -83,7 +83,6 @@ function LofiNightBg({ rain }) {
       {/* Stars */}
       {LOFI_STARS.map((s, i) => (
         <div key={i} style={{
-          '--star-op': s.op,
           position: 'absolute',
           left: `${s.x}%`, top: `${s.y}%`,
           width: s.r * 2, height: s.r * 2,
@@ -150,8 +149,11 @@ function getRemaining(endTime) {
   return diff < 60 ? `${diff}m left` : `${Math.floor(diff / 60)}h ${diff % 60}m left`
 }
 
-function toEmbedUrl(url) {
-  if (!url) return ''
+function toEmbedUrl(raw) {
+  if (!raw) return ''
+  // If user pastes a full <iframe ...> embed code, pull out the src
+  const srcMatch = raw.match(/\bsrc=["']([^"']+)["']/)
+  const url = srcMatch ? srcMatch[1].trim() : raw.trim()
   const full = url.startsWith('http') ? url : 'https://' + url
   if (full.includes('open.spotify.com/embed')) return full
   try {
@@ -209,8 +211,10 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
   }
 
   function saveSpotify() {
-    setSpotifyUrl(spotifyInput.trim())
-    localStorage.setItem('study_hub_spotify_url', spotifyInput.trim())
+    const clean = toEmbedUrl(spotifyInput.trim())
+    setSpotifyUrl(clean)
+    setSpotifyInput(clean)
+    localStorage.setItem('study_hub_spotify_url', clean)
     setShowSpotify(false)
   }
 
@@ -450,7 +454,7 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
                 value={spotifyInput}
                 onChange={e => setSpotifyInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && saveSpotify()}
-                placeholder="Paste any Spotify playlist or track URL"
+                placeholder="Paste a Spotify URL or full embed code"
                 style={{
                   background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
                   borderRadius: 8, padding: '5px 10px', fontSize: 11,
