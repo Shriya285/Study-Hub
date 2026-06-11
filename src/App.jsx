@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { useSync } from './hooks/useSync'
 import { DEFAULT_SCHEDULE, DEFAULT_GOALS, DEFAULT_RESOURCES, DEFAULT_TROPHIES } from './constants/defaults'
 import { useDailyReset } from './hooks/useDailyReset'
 import { useXP } from './hooks/useXP'
@@ -124,7 +125,8 @@ export default function App() {
   const [trophies, setTrophies] = useState(initTrophies)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
-  const { level, progress, xpInLevel, xpToNext, leveledUp, addXP, resetXP, clearLevelUp } = useXP()
+  const { level, progress, xpInLevel, xpToNext, leveledUp, addXP, subtractXP, resetXP, clearLevelUp } = useXP()
+  const { push: syncPush } = useSync()
   const sessionSchedule = getSessionSchedule(settings.schedule)
   const [focusOpen, setFocusOpen] = useState(false)
   const [notesOpen, setNotesOpen] = useState(false)
@@ -138,11 +140,13 @@ export default function App() {
   function saveSettings(updated) {
     setSettings(updated)
     localStorage.setItem('study_hub_settings', JSON.stringify(updated))
+    syncPush()
   }
 
   function saveTodayData(updated) {
     setTodayData(updated)
     localStorage.setItem('study_hub_today', JSON.stringify(updated))
+    syncPush()
   }
 
   function onPomComplete() {
@@ -159,6 +163,7 @@ export default function App() {
       q.id === questId ? { ...q, done: !q.done } : q
     )
     if (!quest.done) addXP(quest.xp)
+    else subtractXP(quest.xp)
 
     const allDone = updatedQuests.every(q => q.done)
     const today = todayString()
@@ -187,6 +192,7 @@ export default function App() {
     setStreak(0); setLastComplete('')
     localStorage.setItem('study_hub_streak', '0')
     localStorage.removeItem('study_hub_last_complete')
+    syncPush()
   }
 
   function saveNoteFromGuide({ subject, title, content }) {
@@ -216,6 +222,7 @@ export default function App() {
       quests: settings.goals.map(g => ({ id: g.id, label: g.label, xp: g.xp || 20, done: false })),
       poms: 0,
     })
+    syncPush()
   }
 
   return (

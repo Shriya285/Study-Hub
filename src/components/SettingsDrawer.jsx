@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { X, Plus, Trash2, Sun, Code2, Coffee, BookOpen, Utensils, Terminal, Send, PenLine, Zap, Moon, Brain, Clock, Laptop2, Flame, Target, Dumbbell, Music, FileText, Globe, Star } from 'lucide-react'
+import { X, Plus, Trash2, Sun, Code2, Coffee, BookOpen, Utensils, Terminal, Send, PenLine, Zap, Moon, Brain, Clock, Laptop2, Flame, Target, Dumbbell, Music, FileText, Globe, Star, Copy, Check } from 'lucide-react'
 import { useIsMobile } from '../hooks/useIsMobile'
+import { getSyncId } from '../hooks/useSync'
 
 const BLOCK_ICONS = [
   { key: 'sun',        Icon: Sun        },
@@ -407,6 +408,115 @@ function LinksTab({ local, setLocal }) {
   )
 }
 
+/* ─── SyncTab ───────────────────────────────────────────── */
+function SyncTab() {
+  const [syncId, setSyncId] = useState(() => getSyncId())
+  const [inputId, setInputId] = useState('')
+  const [copied, setCopied] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const [linkConfirm, setLinkConfirm] = useState(false)
+
+  function copyId() {
+    navigator.clipboard.writeText(syncId).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  function linkDevice() {
+    const trimmed = inputId.trim()
+    if (!trimmed) return
+    localStorage.setItem('study_hub_sync_id', trimmed)
+    localStorage.removeItem('study_hub_sync_ts')
+    window.location.reload()
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div>
+        <span style={LABEL}>Your Sync ID</span>
+        <p style={{ fontSize: 12, color: 'var(--fg3)', marginBottom: 10, lineHeight: 1.5 }}>
+          Copy this ID and paste it on another device to sync your progress.
+        </p>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{
+            flex: 1, background: 'var(--surface2)', border: '1.5px solid var(--border)',
+            borderRadius: 8, padding: '8px 12px', fontSize: 11,
+            fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg2)',
+            wordBreak: 'break-all', lineHeight: 1.6,
+          }}>
+            {syncId}
+          </div>
+          <button
+            onClick={copyId}
+            style={{
+              width: 36, height: 36, borderRadius: 8, border: '1.5px solid var(--border)',
+              background: copied ? 'var(--mint)' : 'var(--surface2)',
+              color: copied ? '#ffffff' : 'var(--purple-d)',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, transition: 'all 0.15s',
+            }}
+            title="Copy sync ID"
+          >
+            {copied ? <Check size={14} /> : <Copy size={14} />}
+          </button>
+        </div>
+      </div>
+
+      <div style={{ height: 1, background: 'var(--border)' }} />
+
+      <div>
+        <span style={LABEL}>Link to another device</span>
+        <p style={{ fontSize: 12, color: 'var(--fg3)', marginBottom: 10, lineHeight: 1.5 }}>
+          Paste the Sync ID from your other device to pull its data here.
+        </p>
+        <input
+          type="text"
+          value={inputId}
+          onChange={e => { setInputId(e.target.value); setLinkConfirm(false) }}
+          placeholder="Paste sync ID…"
+          style={{ ...inp(focused), marginBottom: 10 }}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+        />
+        {!linkConfirm ? (
+          <button
+            onClick={() => inputId.trim() && setLinkConfirm(true)}
+            disabled={!inputId.trim()}
+            style={{
+              background: inputId.trim() ? 'linear-gradient(135deg, #b794f4, #e88d67)' : 'var(--surface4)',
+              border: 'none', borderRadius: 8, padding: '8px 18px',
+              fontSize: 13, fontWeight: 500, color: inputId.trim() ? '#ffffff' : 'var(--fg4)',
+              cursor: inputId.trim() ? 'pointer' : 'not-allowed', transition: 'opacity 0.15s',
+            }}
+          >
+            Link device
+          </button>
+        ) : (
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <button
+              onClick={linkDevice}
+              style={{
+                background: 'linear-gradient(135deg, #b794f4, #e88d67)',
+                border: 'none', borderRadius: 8, padding: '8px 18px',
+                fontSize: 13, fontWeight: 500, color: '#ffffff', cursor: 'pointer',
+              }}
+            >
+              Yes, sync from that device
+            </button>
+            <button
+              onClick={() => setLinkConfirm(false)}
+              style={{ background: 'none', border: 'none', color: 'var(--fg3)', fontSize: 12, cursor: 'pointer', padding: '4px 8px' }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 /* ─── DangerTab ─────────────────────────────────────────── */
 function DangerTab({ onResetStreak, onResetAll, onClose }) {
   const [confirmStreak, setConfirmStreak] = useState(false)
@@ -488,6 +598,7 @@ const TABS = [
   { id: 'schedule', label: 'Schedule' },
   { id: 'quests',   label: 'Quests'   },
   { id: 'links',    label: 'Links'    },
+  { id: 'sync',     label: 'Sync'     },
   { id: 'danger',   label: 'Danger'   },
 ]
 
@@ -583,6 +694,7 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
           {activeTab === 'schedule' && <ScheduleTab local={local} setLocal={setLocal} />}
           {activeTab === 'quests'   && <QuestsTab   local={local} setLocal={setLocal} />}
           {activeTab === 'links'    && <LinksTab     local={local} setLocal={setLocal} />}
+          {activeTab === 'sync'     && <SyncTab />}
           {activeTab === 'danger'   && (
             <DangerTab
               onResetStreak={onResetStreak}

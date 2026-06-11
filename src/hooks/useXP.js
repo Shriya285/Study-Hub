@@ -52,6 +52,15 @@ export function useXP() {
     })
   }, [])
 
+  const subtractXP = useCallback((amount) => {
+    setData(prev => {
+      const newXP = Math.max(0, prev.xp - amount)
+      const updated = { xp: newXP }
+      localStorage.setItem('study_hub_xp', JSON.stringify(updated))
+      return updated
+    })
+  }, [])
+
   const resetXP = useCallback(() => {
     localStorage.removeItem('study_hub_xp')
     setData({ xp: 0 })
@@ -60,5 +69,5 @@ export function useXP() {
 
   const clearLevelUp = useCallback(() => setLeveledUp(false), [])
 
-  return { xp: data.xp, leveledUp, addXP, resetXP, clearLevelUp, ...getLevelInfo(data.xp) }
+  return { xp: data.xp, leveledUp, addXP, subtractXP, resetXP, clearLevelUp, ...getLevelInfo(data.xp) }
 }
