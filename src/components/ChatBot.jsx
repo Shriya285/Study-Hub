@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { MessageCircle, X, Send } from 'lucide-react'
 import { useCurrentBlock } from '../hooks/useCurrentBlock'
 import { callClaudeChat } from '../hooks/useClaudeAPI'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 function buildSystemPrompt(current, schedule, questsDone, questsTotal, pomCount, daysLeft) {
   const dayNum = Math.max(1, 31 - daysLeft)
@@ -91,6 +92,7 @@ function LoadingDots() {
 export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, daysLeft }) {
   const { current } = useCurrentBlock(schedule)
   const [open, setOpen] = useState(false)
+  const isMobile = useIsMobile()
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -165,7 +167,17 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
 
       {/* Chat panel */}
       {open && (
-        <div style={{
+        <div style={isMobile ? {
+          position: 'fixed', bottom: 0, left: 0, right: 0,
+          width: '100%', height: '80vh',
+          background: 'var(--surface)', border: 'none',
+          borderTop: '1.5px solid var(--border)',
+          borderRadius: '20px 20px 0 0',
+          boxShadow: '0 -4px 30px var(--shadow-panel)',
+          display: 'flex', flexDirection: 'column', zIndex: 100,
+          animation: 'cbSlide 0.2s ease',
+          overflow: 'hidden',
+        } : {
           position: 'fixed', bottom: 84, right: 24,
           width: 340, maxHeight: 480,
           background: 'var(--surface)', border: '1.5px solid var(--border)',

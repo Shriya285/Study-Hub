@@ -28,11 +28,7 @@ export default function QuickLaunch({ resources }) {
       }}>
         Quick Launch
       </p>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: 6,
-      }}>
+      <div className="ql-grid">
         {resources.slice(0, 8).map(r => {
           const Icon = ICON_MAP[r.icon] ?? Code2
           const isHighlighted = HIGHLIGHT_LABELS.includes(r.label)

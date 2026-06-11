@@ -4,6 +4,7 @@ import { useNotes } from '../hooks/useNotes'
 import NoteCard from './NoteCard'
 import NoteEditor from './NoteEditor'
 import { useCurrentBlock } from '../hooks/useCurrentBlock'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 function todayString() {
   return new Date().toISOString().slice(0, 10)
@@ -36,6 +37,7 @@ export default function NotesPanel({ open, onClose, schedule }) {
   const [activeDay, setActiveDay] = useState(todayString())
   const [editingId, setEditingId] = useState(null)
   const currentIdRef = useRef(null)
+  const isMobile = useIsMobile()
 
   const [pos, setPos] = useState(() => getDefaultState().pos)
   const [size, setSize] = useState(() => getDefaultState().size)
@@ -120,9 +122,19 @@ export default function NotesPanel({ open, onClose, schedule }) {
 
   if (!open) return null
 
-  return (
-    <div
-      style={{
+  const panelStyle = isMobile
+    ? {
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50,
+        width: '100%', height: '100%',
+        background: 'var(--bg)',
+        border: 'none',
+        borderRadius: 0,
+        boxShadow: 'none',
+        display: 'flex', flexDirection: 'column',
+        overflow: 'hidden',
+        userSelect: 'none',
+      }
+    : {
         position: 'fixed', top: pos.top, left: pos.left, zIndex: 50,
         width: size.width, height: size.height,
         background: 'var(--bg)',
@@ -133,20 +145,22 @@ export default function NotesPanel({ open, onClose, schedule }) {
         overflow: 'hidden',
         userSelect: 'none',
         animation: 'panelPop 0.18s ease',
-      }}
-    >
-      {/* Drag handle header */}
+      }
+
+  return (
+    <div style={panelStyle}>
+      {/* Header — drag handle on desktop, plain on mobile */}
       <div
-        onMouseDown={onDragStart}
+        onMouseDown={isMobile ? undefined : onDragStart}
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '14px 16px', borderBottom: '1.5px solid var(--border)', flexShrink: 0,
-          cursor: 'grab',
+          cursor: isMobile ? 'default' : 'grab',
           background: 'var(--bg)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <GripHorizontal size={14} color="var(--fg4)" style={{ flexShrink: 0 }} />
+          {!isMobile && <GripHorizontal size={14} color="var(--fg4)" style={{ flexShrink: 0 }} />}
           <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--fg)', userSelect: 'none' }}>Notes</span>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -258,20 +272,22 @@ export default function NotesPanel({ open, onClose, schedule }) {
         </>
       )}
 
-      {/* Resize handle */}
-      <div
-        onMouseDown={onResizeStart}
-        style={{
-          position: 'absolute', bottom: 0, right: 0,
-          width: 22, height: 22, cursor: 'nwse-resize',
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end',
-          padding: 5,
-        }}
-      >
-        <svg width="9" height="9" viewBox="0 0 9 9">
-          <path d="M1,8 L8,1 M4.5,8 L8,4.5" stroke="var(--fg4)" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-      </div>
+      {/* Resize handle — desktop only */}
+      {!isMobile && (
+        <div
+          onMouseDown={onResizeStart}
+          style={{
+            position: 'absolute', bottom: 0, right: 0,
+            width: 22, height: 22, cursor: 'nwse-resize',
+            display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end',
+            padding: 5,
+          }}
+        >
+          <svg width="9" height="9" viewBox="0 0 9 9">
+            <path d="M1,8 L8,1 M4.5,8 L8,4.5" stroke="var(--fg4)" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </div>
+      )}
     </div>
   )
 }

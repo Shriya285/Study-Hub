@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, Plus, Trash2, Sun, Code2, Coffee, BookOpen, Utensils, Terminal, Send, PenLine, Zap, Moon, Brain, Clock, Laptop2, Flame, Target, Dumbbell, Music, FileText, Globe, Star } from 'lucide-react'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 const BLOCK_ICONS = [
   { key: 'sun',        Icon: Sun        },
@@ -494,6 +495,7 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
   const [local, setLocal] = useState(settings)
   const [activeTab, setActiveTab] = useState('general')
   const [closeHov, setCloseHov] = useState(false)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     setLocal(settings)
@@ -514,9 +516,10 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
       )}
 
       <div style={{
-        position: 'fixed', top: 0, right: 0, height: '100%', width: 400,
+        position: 'fixed', top: 0, right: 0, height: '100%',
+        width: isMobile ? '100%' : 400,
         background: 'var(--bg)',
-        borderLeft: '2px solid var(--border)',
+        borderLeft: isMobile ? 'none' : '2px solid var(--border)',
         boxShadow: '-8px 0 32px rgba(124,92,191,0.06)',
         zIndex: 50,
         display: 'flex', flexDirection: 'column',
@@ -545,7 +548,7 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
           </div>
 
           {/* ── Tab row ── */}
-          <div style={{ display: 'flex', gap: 2, borderBottom: '1.5px solid var(--border)' }}>
+          <div className="no-scrollbar" style={{ display: 'flex', gap: 2, borderBottom: '1.5px solid var(--border)', overflowX: 'auto' }}>
             {TABS.map(tab => {
               const isActive = activeTab === tab.id
               const isDanger = tab.id === 'danger'

@@ -221,7 +221,7 @@ export default function App() {
   return (
     <ThemeProvider>
     <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
-      <div style={{ maxWidth: 880, margin: '0 auto', padding: '16px 24px 48px' }}>
+      <div className="app-wrap">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* 1. Header */}
@@ -257,7 +257,7 @@ export default function App() {
           <ScheduleStrip schedule={sessionSchedule} />
 
           {/* 5. 2-column grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div className="two-col-grid">
             <PomodoroTimer timer={timer} pomCount={todayData.poms} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <DailyQuests quests={todayData.quests} onQuestToggle={onQuestToggle} />

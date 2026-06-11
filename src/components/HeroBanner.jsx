@@ -107,8 +107,8 @@ export default function HeroBanner({ schedule, poms, questsDone, questsTotal }) 
           )}
         </div>
 
-        {/* Right */}
-        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+        {/* Right — hidden on mobile */}
+        <div className="hero-right" style={{ textAlign: 'right', flexShrink: 0 }}>
           <p style={{
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 22, fontWeight: 500, color: 'var(--purple-bright)',
