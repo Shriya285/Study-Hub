@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ChevronRight, RefreshCw } from 'lucide-react'
+import { ChevronRight, RefreshCw, Bookmark, Check } from 'lucide-react'
 import { useCurrentBlock } from '../hooks/useCurrentBlock'
 import { callClaude } from '../hooks/useClaudeAPI'
 
@@ -22,7 +22,7 @@ function guideKey(blockLabel) {
   return `${todayString()}-${blockLabel}`
 }
 
-function makePrompt(block, daysLeft) {
+function makePrompt(block, daysLeft, customPrompt) {
   const [sh, sm] = block.start.split(':').map(Number)
   const [eh, em] = block.end.split(':').map(Number)
   const dur = (eh * 60 + em) - (sh * 60 + sm)
@@ -31,7 +31,7 @@ function makePrompt(block, daysLeft) {
     : `${dur}m`
   const dayNum = Math.max(1, 31 - daysLeft)
 
-  return `You are a focused placement prep coach for Shriya, a final-year CS student preparing for technical interviews at companies like Cisco, Atlassian, NetApp, and Intuit.
+  let prompt = `You are a focused placement prep coach for Shriya, a final-year CS student preparing for technical interviews at companies like Cisco, Atlassian, NetApp, and Intuit.
 
 Current study block: ${block.label} (${block.start}–${block.end}, ${durStr})
 Block subtitle: ${block.subtitle || ''}
@@ -58,6 +58,12 @@ PRACTICE PROBLEMS
 RESOURCES
 → [Resource name]: [specific link or location]
 → [Resource name]: [specific link or location]`
+
+  if (customPrompt?.trim()) {
+    prompt += `\n\nUser's specific focus request: "${customPrompt.trim()}"\nAdjust the TODAY'S FOCUS, CONCEPTS, and PRACTICE PROBLEMS sections to address this.`
+  }
+
+  return prompt
 }
 
 const SECTION_LABELS = ["TODAY'S FOCUS", "CONCEPTS TO COVER", "PRACTICE PROBLEMS", "RESOURCES"]
@@ -73,6 +79,35 @@ function parseGuide(text) {
     result[label] = text.slice(start + label.length, end).trim()
   }
   return result
+}
+
+function guideToHtml(guide) {
+  const s = parseGuide(guide)
+  const parts = []
+
+  if (s["TODAY'S FOCUS"]) {
+    parts.push(`<strong>Today's Focus</strong><p>${s["TODAY'S FOCUS"].replace(/\n/g, '<br>')}</p>`)
+  }
+  if (s["CONCEPTS TO COVER"]) {
+    const items = s["CONCEPTS TO COVER"].split('\n')
+      .filter(l => l.trim().startsWith('•'))
+      .map(l => `<li>${l.replace(/^•\s*/, '').trim()}</li>`)
+    if (items.length) parts.push(`<strong>Concepts to Cover</strong><ul>${items.join('')}</ul>`)
+  }
+  if (s["PRACTICE PROBLEMS"]) {
+    const items = s["PRACTICE PROBLEMS"].split('\n')
+      .filter(l => /^\d+\./.test(l.trim()))
+      .map(l => `<li>${l.replace(/^\d+\.\s*/, '').trim()}</li>`)
+    if (items.length) parts.push(`<strong>Practice Problems</strong><ol>${items.join('')}</ol>`)
+  }
+  if (s["RESOURCES"]) {
+    const items = s["RESOURCES"].split('\n')
+      .filter(l => l.trim().startsWith('→'))
+      .map(l => `<li>${l.replace(/^→\s*/, '').trim()}</li>`)
+    if (items.length) parts.push(`<strong>Resources</strong><ul>${items.join('')}</ul>`)
+  }
+
+  return parts.join('')
 }
 
 /* ─── Section renderers ─────────────────────────────────── */
@@ -197,13 +232,15 @@ function ResourcesSection({ text }) {
 }
 
 /* ─── Main component ────────────────────────────────────── */
-export default function SessionGuide({ schedule, daysLeft }) {
+export default function SessionGuide({ schedule, daysLeft, onSaveNote, onOpenNotes }) {
   const { current, status } = useCurrentBlock(schedule)
   const [expanded, setExpanded] = useState(false)
   const [guide, setGuide] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [spinning, setSpinning] = useState(false)
+  const [customPrompt, setCustomPrompt] = useState('')
+  const [savedNote, setSavedNote] = useState(false)
 
   useEffect(() => {
     if (!current || current.isBreak) {
@@ -228,7 +265,7 @@ export default function SessionGuide({ schedule, daysLeft }) {
     setSpinning(true)
     setError(null)
     try {
-      const text = await callClaude({ userPrompt: makePrompt(current, daysLeft), maxTokens: 900 })
+      const text = await callClaude({ userPrompt: makePrompt(current, daysLeft, customPrompt), maxTokens: 900 })
       setGuide(text)
       saveGuide(guideKey(current.label), text)
     } catch (e) {
@@ -237,6 +274,18 @@ export default function SessionGuide({ schedule, daysLeft }) {
       setLoading(false)
       setSpinning(false)
     }
+  }
+
+  function handleSaveNote() {
+    if (!guide || !current) return
+    onSaveNote?.({
+      subject: current.label,
+      title: `Session Guide — ${current.label} · ${todayString()}`,
+      content: guideToHtml(guide),
+    })
+    setSavedNote(true)
+    setTimeout(() => setSavedNote(false), 1500)
+    onOpenNotes?.()
   }
 
   if (!current || current.isBreak || status !== 'active') return null
@@ -270,24 +319,42 @@ export default function SessionGuide({ schedule, daysLeft }) {
         )}
       </div>
 
-      {/* CTA — collapsed state */}
+      {/* CTA — collapsed state (with custom prompt textarea) */}
       {!expanded && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <p style={{ fontSize: 13, color: '#a898be', margin: 0 }}>
-            <strong style={{ color: '#7c5cbf' }}>{current.label}</strong> is active. Want a study guide for this session?
-          </p>
-          <button
-            onClick={() => generate(false)}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <textarea
+            value={customPrompt}
+            onChange={e => setCustomPrompt(e.target.value)}
+            rows={2}
+            placeholder="e.g. I struggle with recursion · I want to focus on Cisco-style MCQs · give me harder problems"
             style={{
-              background: 'linear-gradient(135deg, #b794f4, #e88d67)',
-              border: 'none', borderRadius: 8, padding: '6px 14px',
-              fontSize: 12, fontWeight: 500, color: '#ffffff',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-              flexShrink: 0, marginLeft: 12,
+              width: '100%', background: '#faf8ff', border: '1.5px solid #f0eaf7',
+              borderRadius: 8, padding: '8px 12px',
+              fontSize: 12, color: '#2d2a3e', lineHeight: 1.5,
+              fontFamily: "'Inter', system-ui, sans-serif",
+              resize: 'none', outline: 'none',
+              transition: 'border-color 0.15s',
             }}
-          >
-            Ask <ChevronRight size={12} />
-          </button>
+            onFocus={e => e.target.style.borderColor = '#c4a8ff'}
+            onBlur={e => e.target.style.borderColor = '#f0eaf7'}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <p style={{ fontSize: 13, color: '#a898be', margin: 0 }}>
+              <strong style={{ color: '#7c5cbf' }}>{current.label}</strong> is active. Want a study guide for this session?
+            </p>
+            <button
+              onClick={() => generate(false)}
+              style={{
+                background: 'linear-gradient(135deg, #b794f4, #e88d67)',
+                border: 'none', borderRadius: 8, padding: '6px 14px',
+                fontSize: 12, fontWeight: 500, color: '#ffffff',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                flexShrink: 0, marginLeft: 12,
+              }}
+            >
+              Ask <ChevronRight size={12} />
+            </button>
+          </div>
         </div>
       )}
 
@@ -324,7 +391,7 @@ export default function SessionGuide({ schedule, daysLeft }) {
           {s["PRACTICE PROBLEMS"] && <ProblemsSection text={s["PRACTICE PROBLEMS"]} />}
           {s["RESOURCES"] && <ResourcesSection text={s["RESOURCES"]} />}
 
-          <div style={{ borderTop: '1px solid #f0eaf7', paddingTop: 14 }}>
+          <div style={{ borderTop: '1px solid #f0eaf7', paddingTop: 14, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button
               onClick={() => setExpanded(false)}
               style={{
@@ -335,6 +402,23 @@ export default function SessionGuide({ schedule, daysLeft }) {
             >
               ✓ Got it — let's go
             </button>
+            {onSaveNote && (
+              <button
+                onClick={handleSaveNote}
+                style={{
+                  background: savedNote ? '#e8faf3' : '#faf8ff',
+                  border: `1.5px solid ${savedNote ? '#7ee6b8' : '#f0eaf7'}`,
+                  borderRadius: 8, padding: '8px 16px',
+                  fontSize: 13, fontWeight: 500,
+                  color: savedNote ? '#3da87a' : '#8b6fc0',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                  transition: 'all 0.2s',
+                }}
+              >
+                {savedNote ? <Check size={13} /> : <Bookmark size={13} />}
+                {savedNote ? 'Saved ✓' : 'Save as note'}
+              </button>
+            )}
           </div>
         </>
       )}

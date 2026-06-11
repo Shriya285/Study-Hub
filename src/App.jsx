@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { DEFAULT_SCHEDULE, DEFAULT_GOALS, DEFAULT_RESOURCES, DEFAULT_TROPHIES } from './constants/defaults'
 import { useDailyReset } from './hooks/useDailyReset'
 import { useXP } from './hooks/useXP'
+import { useTimer } from './hooks/useTimer'
 import Header from './components/Header'
+import FocusMode from './components/FocusMode'
 import XPBar from './components/XPBar'
 import HeroBanner from './components/HeroBanner'
 import ScheduleStrip from './components/ScheduleStrip'
@@ -11,6 +13,7 @@ import DailyQuests from './components/DailyQuests'
 import Trophies from './components/Trophies'
 import QuickLaunch from './components/QuickLaunch'
 import SessionGuide from './components/SessionGuide'
+import NotesPanel from './components/NotesPanel'
 import ChatBot from './components/ChatBot'
 import SettingsDrawer from './components/SettingsDrawer'
 
@@ -122,6 +125,8 @@ export default function App() {
 
   const { level, progress, xpInLevel, xpToNext, leveledUp, addXP, resetXP, clearLevelUp } = useXP()
   const sessionSchedule = getSessionSchedule(settings.schedule)
+  const [focusOpen, setFocusOpen] = useState(false)
+  const [notesOpen, setNotesOpen] = useState(false)
 
   useDailyReset(todayData, settings.goals, setTodayData)
 
@@ -143,6 +148,8 @@ export default function App() {
     addXP(10)
     saveTodayData({ ...todayData, poms: todayData.poms + 1 })
   }
+
+  const timer = useTimer(onPomComplete)
 
   function onQuestToggle(questId) {
     const quest = todayData.quests.find(q => q.id === questId)
@@ -181,6 +188,22 @@ export default function App() {
     localStorage.removeItem('study_hub_last_complete')
   }
 
+  function saveNoteFromGuide({ subject, title, content }) {
+    const now = new Date()
+    const note = {
+      id: now.getTime().toString(),
+      date: todayString(),
+      subject, title, content,
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+    }
+    const existing = (() => {
+      try { return JSON.parse(localStorage.getItem('study_hub_notes') || '[]') }
+      catch { return [] }
+    })()
+    localStorage.setItem('study_hub_notes', JSON.stringify([note, ...existing]))
+  }
+
   function onResetAll() {
     resetXP(); setStreak(0); setLastComplete('')
     setTrophies({ ...DEFAULT_TROPHIES })
@@ -206,6 +229,8 @@ export default function App() {
             daysLeft={daysLeft}
             poms={todayData.poms}
             onSettingsOpen={() => setSettingsOpen(true)}
+            onFocusOpen={() => setFocusOpen(true)}
+            onNotesOpen={() => setNotesOpen(true)}
           />
 
           {/* 2. XP Bar */}
@@ -231,7 +256,7 @@ export default function App() {
 
           {/* 5. 2-column grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <PomodoroTimer onPomComplete={onPomComplete} pomCount={todayData.poms} />
+            <PomodoroTimer timer={timer} pomCount={todayData.poms} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <DailyQuests quests={todayData.quests} onQuestToggle={onQuestToggle} />
               <Trophies trophies={trophies} />
@@ -242,10 +267,31 @@ export default function App() {
           <QuickLaunch resources={settings.resources} />
 
           {/* 7. Session Guide */}
-          <SessionGuide schedule={sessionSchedule} daysLeft={daysLeft} />
+          <SessionGuide
+            schedule={sessionSchedule}
+            daysLeft={daysLeft}
+            onSaveNote={saveNoteFromGuide}
+            onOpenNotes={() => setNotesOpen(true)}
+          />
 
         </div>
       </div>
+
+      {focusOpen && (
+        <FocusMode
+          timer={timer}
+          schedule={sessionSchedule}
+          pomCount={todayData.poms}
+          daysLeft={daysLeft}
+          onClose={() => setFocusOpen(false)}
+        />
+      )}
+
+      <NotesPanel
+        open={notesOpen}
+        onClose={() => setNotesOpen(false)}
+        schedule={sessionSchedule}
+      />
 
       <ChatBot
         schedule={sessionSchedule}

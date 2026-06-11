@@ -66,3 +66,16 @@ body {
   to   { transform: rotate(360deg); }
 }
 .spin { animation: spin 1s linear infinite; }
+
+/* Note editor placeholder */
+.note-editor-area.is-empty::before {
+  content: attr(data-placeholder);
+  color: #c0aed8;
+  pointer-events: none;
+  display: block;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
