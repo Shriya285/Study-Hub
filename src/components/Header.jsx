@@ -1,11 +1,41 @@
+import { useState, useEffect } from 'react'
 import { Settings, Headphones, NotebookPen } from 'lucide-react'
 
 export default function Header({ name, streak, daysLeft, poms, onSettingsOpen, onFocusOpen, onNotesOpen }) {
+  const [now, setNow] = useState(new Date())
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  const hh = now.getHours().toString().padStart(2, '0')
+  const mm = now.getMinutes().toString().padStart(2, '0')
+  const ss = now.getSeconds().toString().padStart(2, '0')
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8 }}>
-      <p style={{ fontSize: 20, fontWeight: 500, color: '#2d2a3e', margin: 0 }}>
-        Hey, <span style={{ color: '#d97a4a' }}>{name}</span>! ✨
-      </p>
+      <div>
+        <p style={{ fontSize: 20, fontWeight: 500, color: '#2d2a3e', margin: 0 }}>
+          Hey, <span style={{ color: '#d97a4a' }}>{name}</span>! ✨
+        </p>
+        <p style={{ margin: '3px 0 0', display: 'flex', alignItems: 'baseline', gap: 1 }}>
+          <span style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 15, fontWeight: 400, color: '#8b6fc0',
+            letterSpacing: '0.04em',
+          }}>
+            {hh}:{mm}
+          </span>
+          <span style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11, color: '#c0aed8',
+            letterSpacing: '0.04em', marginLeft: 2,
+          }}>
+            :{ss}
+          </span>
+        </p>
+      </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ background: '#fff4ec', color: '#d97a4a', padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500 }}>

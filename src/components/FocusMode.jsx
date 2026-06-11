@@ -182,6 +182,8 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
   const [showSpotify, setShowSpotify] = useState(false)
   const [spotifyInput, setSpotifyInput] = useState(() => localStorage.getItem('study_hub_spotify_url') || '')
 
+  const [clockTime, setClockTime] = useState(new Date())
+
   const { mode, timeLeft, running, setRunning, switchMode, reset, progress } = timer
   const dash = CIRC * progress
   const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0')
@@ -189,10 +191,19 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
   const activeScene = SCENES.find(s => s.id === scene) || SCENES[0]
 
   useEffect(() => {
+    const id = setInterval(() => setClockTime(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
     function onEsc(e) { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onEsc)
     return () => window.removeEventListener('keydown', onEsc)
   }, [onClose])
+
+  const clockHH = clockTime.getHours().toString().padStart(2, '0')
+  const clockMM = clockTime.getMinutes().toString().padStart(2, '0')
+  const clockSS = clockTime.getSeconds().toString().padStart(2, '0')
 
   function pickScene(id) {
     setScene(id)
@@ -275,6 +286,33 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
         >
           <ArrowLeft size={14} /> Back to hub
         </button>
+      </div>
+
+      {/* Digital clock widget */}
+      <div style={{
+        position: 'absolute', top: 68, left: 24,
+        background: 'rgba(0,0,0,0.28)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: 10, padding: '8px 16px',
+        display: 'flex', alignItems: 'baseline', gap: 2,
+        backdropFilter: 'blur(8px)',
+      }}>
+        <span style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 28, fontWeight: 300,
+          color: 'rgba(255,255,255,0.88)',
+          letterSpacing: '0.04em', lineHeight: 1,
+        }}>
+          {clockHH}:{clockMM}
+        </span>
+        <span style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 14, fontWeight: 300,
+          color: 'rgba(255,255,255,0.4)',
+          letterSpacing: '0.04em', marginLeft: 3,
+        }}>
+          :{clockSS}
+        </span>
       </div>
 
       {/* Centered timer card */}
