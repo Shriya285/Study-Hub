@@ -25,17 +25,17 @@ export default function NoteCard({ note, onClick, onDelete }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        background: '#ffffff',
-        border: `1.5px solid ${hov ? '#e0d6f0' : '#f0eaf7'}`,
+        background: 'var(--surface)',
+        border: `1.5px solid ${hov ? 'var(--border2)' : 'var(--border)'}`,
         borderRadius: 12, padding: '10px 14px',
         cursor: 'pointer',
         transition: 'border-color 0.15s, box-shadow 0.15s',
-        boxShadow: hov ? '0 2px 8px rgba(124,92,191,0.08)' : 'none',
+        boxShadow: hov ? 'var(--shadow-card) 0 2px 8px' : 'none',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <span style={{
-          background: '#f5f1fc', color: '#8b6fc0',
+          background: 'var(--surface3)', color: 'var(--purple-d)',
           fontSize: 9, fontWeight: 500, padding: '2px 8px', borderRadius: 20,
           flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.06em',
         }}>
@@ -43,7 +43,7 @@ export default function NoteCard({ note, onClick, onDelete }) {
         </span>
         <span style={{
           fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-          color: '#c0aed8', flex: 1,
+          color: 'var(--fg4)', flex: 1,
         }}>
           {time}
         </span>
@@ -54,7 +54,7 @@ export default function NoteCard({ note, onClick, onDelete }) {
             onMouseLeave={() => setDelHov(false)}
             style={{
               background: 'none', border: 'none', cursor: 'pointer', padding: 2,
-              color: delHov ? '#e57373' : '#c0aed8', transition: 'color 0.15s',
+              color: delHov ? '#e57373' : 'var(--fg4)', transition: 'color 0.15s',
               display: 'flex', alignItems: 'center',
             }}
           >
@@ -64,15 +64,15 @@ export default function NoteCard({ note, onClick, onDelete }) {
       </div>
 
       {note.title && (
-        <p style={{ fontSize: 13, fontWeight: 500, color: '#2d2a3e', margin: '0 0 6px' }}>
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg)', margin: '0 0 6px' }}>
           {note.title}
         </p>
       )}
 
-      <div style={{ height: 1, background: '#f0eaf7', marginBottom: 6 }} />
+      <div style={{ height: 1, background: 'var(--border)', marginBottom: 6 }} />
 
       <p style={{
-        fontSize: 12, color: '#a898be', margin: 0, lineHeight: 1.5,
+        fontSize: 12, color: 'var(--fg3)', margin: 0, lineHeight: 1.5,
         display: '-webkit-box', WebkitLineClamp: 2,
         WebkitBoxOrient: 'vertical', overflow: 'hidden',
       }}>

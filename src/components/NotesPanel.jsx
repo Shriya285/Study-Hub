@@ -39,8 +39,6 @@ export default function NotesPanel({ open, onClose, schedule }) {
 
   const [pos, setPos] = useState(() => getDefaultState().pos)
   const [size, setSize] = useState(() => getDefaultState().size)
-  const dragRef = useRef(null)
-  const resizeRef = useRef(null)
 
   useEffect(() => {
     if (open) refresh()
@@ -50,7 +48,6 @@ export default function NotesPanel({ open, onClose, schedule }) {
     currentIdRef.current = editingId === 'new' ? null : editingId
   }, [editingId])
 
-  // Reset position on open
   useEffect(() => {
     if (open) {
       const d = getDefaultState()
@@ -128,10 +125,10 @@ export default function NotesPanel({ open, onClose, schedule }) {
       style={{
         position: 'fixed', top: pos.top, left: pos.left, zIndex: 50,
         width: size.width, height: size.height,
-        background: '#fefcfa',
-        border: '2px solid #f0eaf7',
+        background: 'var(--bg)',
+        border: '2px solid var(--border)',
         borderRadius: 16,
-        boxShadow: '0 12px 48px rgba(124,92,191,0.18)',
+        boxShadow: '0 12px 48px var(--shadow-panel)',
         display: 'flex', flexDirection: 'column',
         overflow: 'hidden',
         userSelect: 'none',
@@ -143,14 +140,14 @@ export default function NotesPanel({ open, onClose, schedule }) {
         onMouseDown={onDragStart}
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '14px 16px', borderBottom: '1.5px solid #f0eaf7', flexShrink: 0,
+          padding: '14px 16px', borderBottom: '1.5px solid var(--border)', flexShrink: 0,
           cursor: 'grab',
-          background: '#fefcfa',
+          background: 'var(--bg)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <GripHorizontal size={14} color="#c0aed8" style={{ flexShrink: 0 }} />
-          <span style={{ fontSize: 15, fontWeight: 500, color: '#2d2a3e', userSelect: 'none' }}>Notes</span>
+          <GripHorizontal size={14} color="var(--fg4)" style={{ flexShrink: 0 }} />
+          <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--fg)', userSelect: 'none' }}>Notes</span>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {!editingId && (
@@ -170,12 +167,12 @@ export default function NotesPanel({ open, onClose, schedule }) {
             onClick={onClose}
             style={{
               width: 30, height: 30, borderRadius: '50%', border: 'none', cursor: 'pointer',
-              background: '#f5f1fc', color: '#8b6fc0',
+              background: 'var(--surface3)', color: 'var(--purple-d)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.15s',
             }}
-            onMouseEnter={e => e.currentTarget.style.background = '#e0d6f0'}
-            onMouseLeave={e => e.currentTarget.style.background = '#f5f1fc'}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--surface4)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'var(--surface3)'}
           >
             <X size={14} />
           </button>
@@ -197,7 +194,7 @@ export default function NotesPanel({ open, onClose, schedule }) {
       ) : (
         <>
           {/* Day tabs */}
-          <div style={{ borderBottom: '1.5px solid #f0eaf7', flexShrink: 0 }}>
+          <div style={{ borderBottom: '1.5px solid var(--border)', flexShrink: 0 }}>
             <div className="no-scrollbar" style={{ display: 'flex', gap: 6, padding: '10px 16px', overflowX: 'auto' }}>
               {days.map(day => (
                 <button
@@ -206,9 +203,9 @@ export default function NotesPanel({ open, onClose, schedule }) {
                   style={{
                     padding: '5px 12px', borderRadius: 20, border: '1.5px solid',
                     fontSize: 12, fontWeight: 500, cursor: 'pointer', flexShrink: 0,
-                    background: activeDay === day ? '#f5f1fc' : '#ffffff',
-                    borderColor: activeDay === day ? '#c4a8ff' : '#f0eaf7',
-                    color: activeDay === day ? '#7c5cbf' : '#a898be',
+                    background: activeDay === day ? 'var(--surface3)' : 'var(--surface)',
+                    borderColor: activeDay === day ? 'var(--purple-bright)' : 'var(--border)',
+                    color: activeDay === day ? 'var(--purple-dd)' : 'var(--fg3)',
                     transition: 'all 0.15s',
                   }}
                 >
@@ -221,16 +218,16 @@ export default function NotesPanel({ open, onClose, schedule }) {
           {/* Notes list */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 16px', userSelect: 'text' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <span style={{ fontSize: 12, color: '#a898be' }}>
+              <span style={{ fontSize: 12, color: 'var(--fg3)' }}>
                 {activeDay === todayString() ? 'Notes for today' : `Notes from ${formatTab(activeDay)}`}
               </span>
-              <span style={{ fontSize: 11, color: '#c0aed8', background: '#f5f1fc', padding: '2px 8px', borderRadius: 20 }}>
+              <span style={{ fontSize: 11, color: 'var(--fg4)', background: 'var(--surface3)', padding: '2px 8px', borderRadius: 20 }}>
                 {dayNotes.length} {dayNotes.length === 1 ? 'note' : 'notes'}
               </span>
             </div>
 
             {dayNotes.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px 0', color: '#c0aed8', fontSize: 13 }}>
+              <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--fg4)', fontSize: 13 }}>
                 <div style={{ fontSize: 30, marginBottom: 8 }}>📓</div>
                 No notes yet
                 <br />
@@ -238,7 +235,7 @@ export default function NotesPanel({ open, onClose, schedule }) {
                   onClick={() => setEditingId('new')}
                   style={{
                     background: 'none', border: 'none',
-                    color: '#b794f4', fontSize: 12, cursor: 'pointer',
+                    color: 'var(--purple)', fontSize: 12, cursor: 'pointer',
                     marginTop: 8, textDecoration: 'underline',
                   }}
                 >
@@ -272,7 +269,7 @@ export default function NotesPanel({ open, onClose, schedule }) {
         }}
       >
         <svg width="9" height="9" viewBox="0 0 9 9">
-          <path d="M1,8 L8,1 M4.5,8 L8,4.5" stroke="#c0aed8" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M1,8 L8,1 M4.5,8 L8,4.5" stroke="var(--fg4)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </div>
     </div>

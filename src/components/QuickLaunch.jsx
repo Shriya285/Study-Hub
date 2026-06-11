@@ -12,18 +12,17 @@ const ICON_MAP = {
   'file-text':     FileText,
 }
 
-/* Cisco Prep gets a highlight border per spec */
 const HIGHLIGHT_LABELS = ['Cisco Prep']
 
 export default function QuickLaunch({ resources }) {
   return (
     <div style={{
-      background: '#ffffff',
-      border: '1.5px solid #f0eaf7',
+      background: 'var(--surface)',
+      border: '1.5px solid var(--border)',
       borderRadius: 16, padding: 14,
     }}>
       <p style={{
-        fontSize: 10, fontWeight: 500, color: '#c0aed8',
+        fontSize: 10, fontWeight: 500, color: 'var(--fg4)',
         letterSpacing: '0.08em', textTransform: 'uppercase',
         margin: '0 0 10px',
       }}>
@@ -44,25 +43,25 @@ export default function QuickLaunch({ resources }) {
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 padding: '10px 4px', gap: 5,
-                background: '#faf8ff',
-                border: `1.5px solid ${isHighlighted ? '#d8c4f0' : '#f0eaf7'}`,
+                background: 'var(--surface2)',
+                border: `1.5px solid ${isHighlighted ? 'var(--border2)' : 'var(--border)'}`,
                 borderRadius: 12,
                 cursor: r.url ? 'pointer' : 'default',
                 transition: 'border-color 0.15s, background 0.15s',
               }}
               onMouseEnter={e => {
                 if (!r.url) return
-                e.currentTarget.style.borderColor = '#d8c4f0'
-                e.currentTarget.style.background = '#f5f1fc'
+                e.currentTarget.style.borderColor = 'var(--border2)'
+                e.currentTarget.style.background = 'var(--surface3)'
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = isHighlighted ? '#d8c4f0' : '#f0eaf7'
-                e.currentTarget.style.background = '#faf8ff'
+                e.currentTarget.style.borderColor = isHighlighted ? 'var(--border2)' : 'var(--border)'
+                e.currentTarget.style.background = 'var(--surface2)'
               }}
             >
-              <Icon size={18} color="#b794f4" />
+              <Icon size={18} color="var(--purple)" />
               <span style={{
-                fontSize: 9, fontWeight: 500, color: '#8b6fc0',
+                fontSize: 9, fontWeight: 500, color: 'var(--purple-d)',
                 textAlign: 'center', lineHeight: 1.2,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 maxWidth: '100%',

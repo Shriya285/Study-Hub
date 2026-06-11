@@ -1,5 +1,75 @@
 @import "tailwindcss";
 
+/* ── Light theme (default) ── */
+:root {
+  --bg:        #fefcfa;
+  --surface:   #ffffff;
+  --surface2:  #faf8ff;
+  --surface3:  #f5f1fc;
+  --surface4:  #e0d6f0;
+  --border:    #f0eaf7;
+  --border2:   #e0d6f0;
+  --fg:        #2d2a3e;
+  --fg2:       #5c4a7e;
+  --fg3:       #a898be;
+  --fg4:       #c0aed8;
+  --purple:        #b794f4;
+  --purple-bright: #c4a8ff;
+  --purple-d:      #8b6fc0;
+  --purple-dd:     #7c5cbf;
+  --peach:         #e88d67;
+  --peach-d:       #d97a4a;
+  --mint:          #4ecfa0;
+  --mint-d:        #3da87a;
+  --mint-light:    #7ee6b8;
+  --badge-peach-bg:   #fff4ec;
+  --badge-peach-text: #d97a4a;
+  --badge-purple-bg:  #f5f1fc;
+  --badge-purple-text:#8b6fc0;
+  --badge-mint-bg:    #e8faf3;
+  --badge-mint-text:  #3da87a;
+  --shadow-card:      rgba(124,92,191,0.07);
+  --shadow-panel:     rgba(124,92,191,0.13);
+  --xp-track:    #f0eaf7;
+  --input-bg:    #faf8ff;
+  --hero-bg:     linear-gradient(135deg, #fef8f4, #fdf2ff, #f4f0ff);
+}
+
+/* ── Dark theme ── */
+html[data-theme="dark"] {
+  --bg:        #0d0c1a;
+  --surface:   #161424;
+  --surface2:  #1c1a2e;
+  --surface3:  #242040;
+  --surface4:  #2d2848;
+  --border:    #2a2542;
+  --border2:   #3d3660;
+  --fg:        #e4deff;
+  --fg2:       #c0aed8;
+  --fg3:       #7868a8;
+  --fg4:       #4e4070;
+  --purple:        #b794f4;
+  --purple-bright: #d0bcff;
+  --purple-d:      #c4a8ff;
+  --purple-dd:     #a07ae0;
+  --peach:         #e88d67;
+  --peach-d:       #f09a78;
+  --mint:          #4ecfa0;
+  --mint-d:        #6adbb4;
+  --mint-light:    #4ecfa0;
+  --badge-peach-bg:   #2d180a;
+  --badge-peach-text: #f09a78;
+  --badge-purple-bg:  #1e1838;
+  --badge-purple-text:#c4a8ff;
+  --badge-mint-bg:    #081e14;
+  --badge-mint-text:  #4ecfa0;
+  --shadow-card:      rgba(0,0,0,0.25);
+  --shadow-panel:     rgba(0,0,0,0.4);
+  --xp-track:    #2a2542;
+  --input-bg:    #1c1a2e;
+  --hero-bg:     linear-gradient(135deg, #1a0e12, #1c0e2a, #100c24);
+}
+
 @theme {
   --color-lavender-50: #faf8ff;
   --color-lavender-100: #f5f1fc;
@@ -31,11 +101,12 @@
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: #fefcfa;
-  color: #2d2a3e;
+  background: var(--bg);
+  color: var(--fg);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #root { min-height: 100vh; }
@@ -70,7 +141,7 @@ body {
 /* Note editor placeholder */
 .note-editor-area.is-empty::before {
   content: attr(data-placeholder);
-  color: #c0aed8;
+  color: var(--fg4);
   pointer-events: none;
   display: block;
 }
@@ -80,9 +151,9 @@ body {
 .note-editor-area ol { list-style: decimal; padding-left: 22px; margin: 4px 0; }
 .note-editor-area li { margin: 2px 0; }
 /* Note editor heading styles */
-.note-editor-area h1 { font-size: 22px; font-weight: 700; color: #2d2a3e; margin: 8px 0 4px; line-height: 1.3; }
-.note-editor-area h2 { font-size: 17px; font-weight: 600; color: #2d2a3e; margin: 6px 0 3px; line-height: 1.4; }
-.note-editor-area h3 { font-size: 14px; font-weight: 600; color: #5c4a7e; margin: 4px 0 2px; line-height: 1.5; }
+.note-editor-area h1 { font-size: 22px; font-weight: 700; color: var(--fg); margin: 8px 0 4px; line-height: 1.3; }
+.note-editor-area h2 { font-size: 17px; font-weight: 600; color: var(--fg); margin: 6px 0 3px; line-height: 1.4; }
+.note-editor-area h3 { font-size: 14px; font-weight: 600; color: var(--fg2); margin: 4px 0 2px; line-height: 1.5; }
 .note-editor-area p  { margin: 2px 0; }
 
 /* Chat message markdown */

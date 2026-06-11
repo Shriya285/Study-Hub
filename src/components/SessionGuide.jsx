@@ -113,15 +113,15 @@ function guideToHtml(guide) {
 /* ─── Section renderers ─────────────────────────────────── */
 const SECTION_LABEL_STYLE = {
   display: 'block', fontSize: 10, fontWeight: 600,
-  color: '#c0aed8', textTransform: 'uppercase',
+  color: 'var(--fg4)', textTransform: 'uppercase',
   letterSpacing: '0.08em', marginBottom: 8,
 }
 
 function FocusSection({ text }) {
   return (
-    <div style={{ background: '#faf8ff', border: '1.5px solid #f0eaf7', borderRadius: 10, padding: '12px 14px', marginBottom: 14 }}>
+    <div style={{ background: 'var(--surface2)', border: '1.5px solid var(--border)', borderRadius: 10, padding: '12px 14px', marginBottom: 14 }}>
       <span style={SECTION_LABEL_STYLE}>Today's Focus</span>
-      <p style={{ fontSize: 13, color: '#5c4a7e', lineHeight: 1.6, margin: 0 }}>{text}</p>
+      <p style={{ fontSize: 13, color: 'var(--fg2)', lineHeight: 1.6, margin: 0 }}>{text}</p>
     </div>
   )
 }
@@ -137,8 +137,8 @@ function ConceptsSection({ text }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {items.map((item, i) => (
           <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ecfa0', flexShrink: 0, marginTop: 6 }} />
-            <span style={{ fontSize: 13, color: '#5c4a7e', lineHeight: 1.5 }}>{item}</span>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', flexShrink: 0, marginTop: 6 }} />
+            <span style={{ fontSize: 13, color: 'var(--fg2)', lineHeight: 1.5 }}>{item}</span>
           </div>
         ))}
       </div>
@@ -147,9 +147,9 @@ function ConceptsSection({ text }) {
 }
 
 const DIFF_COLORS = {
-  Easy:   { bg: '#e8faf3', color: '#3da87a' },
-  Medium: { bg: '#fff4ec', color: '#d97a4a' },
-  Hard:   { bg: '#fef2f2', color: '#e57373' },
+  Easy:   { bg: 'var(--badge-mint-bg)',  color: 'var(--mint-d)' },
+  Medium: { bg: 'var(--badge-peach-bg)', color: 'var(--peach-d)' },
+  Hard:   { bg: '#fef2f2',               color: '#e57373' },
 }
 
 function ProblemsSection({ text }) {
@@ -167,20 +167,20 @@ function ProblemsSection({ text }) {
       <span style={SECTION_LABEL_STYLE}>Practice Problems</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {items.map((item, i) => {
-          const dc = DIFF_COLORS[item.diff] || { bg: '#f5f1fc', color: '#8b6fc0' }
+          const dc = DIFF_COLORS[item.diff] || { bg: 'var(--surface3)', color: 'var(--purple-d)' }
           return (
             <div key={i} style={{
               display: 'flex', alignItems: 'flex-start', gap: 10,
-              background: '#ffffff', border: '1.5px solid #f0eaf7',
+              background: 'var(--surface)', border: '1.5px solid var(--border)',
               borderRadius: 8, padding: '8px 12px',
             }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#c4a8ff', flexShrink: 0, minWidth: 16, paddingTop: 1 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--purple-bright)', flexShrink: 0, minWidth: 16, paddingTop: 1 }}>
                 {i + 1}.
               </span>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#2d2a3e' }}>{item.name}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg)' }}>{item.name}</span>
                 {item.desc && (
-                  <p style={{ fontSize: 11, color: '#a898be', margin: '2px 0 0', lineHeight: 1.4 }}>{item.desc}</p>
+                  <p style={{ fontSize: 11, color: 'var(--fg3)', margin: '2px 0 0', lineHeight: 1.4 }}>{item.desc}</p>
                 )}
               </div>
               {item.diff && (
@@ -213,12 +213,12 @@ function ResourcesSection({ text }) {
           const isUrl = rest.startsWith('http')
           return (
             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-              <span style={{ fontSize: 13, color: '#c4a8ff', flexShrink: 0 }}>→</span>
-              <span style={{ fontSize: 13, color: '#5c4a7e', lineHeight: 1.5 }}>
-                <strong style={{ color: '#7c5cbf' }}>{name}</strong>
+              <span style={{ fontSize: 13, color: 'var(--purple-bright)', flexShrink: 0 }}>→</span>
+              <span style={{ fontSize: 13, color: 'var(--fg2)', lineHeight: 1.5 }}>
+                <strong style={{ color: 'var(--purple-dd)' }}>{name}</strong>
                 {rest && (
                   <>: {isUrl
-                    ? <a href={rest} target="_blank" rel="noreferrer" style={{ color: '#b794f4', textDecoration: 'underline' }}>{rest}</a>
+                    ? <a href={rest} target="_blank" rel="noreferrer" style={{ color: 'var(--purple)', textDecoration: 'underline' }}>{rest}</a>
                     : rest}
                   </>
                 )}
@@ -293,11 +293,11 @@ export default function SessionGuide({ schedule, daysLeft, onSaveNote, onOpenNot
   const s = guide ? parseGuide(guide) : {}
 
   return (
-    <div style={{ background: '#ffffff', border: '1.5px solid #f0eaf7', borderRadius: 16, padding: '16px 18px' }}>
+    <div style={{ background: 'var(--surface)', border: '1.5px solid var(--border)', borderRadius: 16, padding: '16px 18px' }}>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: expanded && guide ? 14 : 0 }}>
-        <span style={{ fontSize: 10, fontWeight: 500, color: '#c0aed8', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--fg4)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           {current.label} Guide
         </span>
         {guide && (
@@ -306,12 +306,12 @@ export default function SessionGuide({ schedule, daysLeft, onSaveNote, onOpenNot
             disabled={loading}
             style={{
               background: 'none', border: 'none', cursor: loading ? 'wait' : 'pointer',
-              color: '#c0aed8', display: 'flex', alignItems: 'center', gap: 4,
+              color: 'var(--fg4)', display: 'flex', alignItems: 'center', gap: 4,
               fontSize: 11, padding: '4px 6px', borderRadius: 6,
               transition: 'color 0.15s',
             }}
-            onMouseEnter={e => { if (!loading) e.currentTarget.style.color = '#8b6fc0' }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#c0aed8' }}
+            onMouseEnter={e => { if (!loading) e.currentTarget.style.color = 'var(--purple-d)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--fg4)' }}
           >
             <RefreshCw size={12} className={spinning ? 'spin' : ''} />
             Refresh
@@ -319,7 +319,7 @@ export default function SessionGuide({ schedule, daysLeft, onSaveNote, onOpenNot
         )}
       </div>
 
-      {/* CTA — collapsed state (with custom prompt textarea) */}
+      {/* CTA — collapsed */}
       {!expanded && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <textarea
@@ -328,19 +328,19 @@ export default function SessionGuide({ schedule, daysLeft, onSaveNote, onOpenNot
             rows={2}
             placeholder="e.g. I struggle with recursion · I want to focus on Cisco-style MCQs · give me harder problems"
             style={{
-              width: '100%', background: '#faf8ff', border: '1.5px solid #f0eaf7',
+              width: '100%', background: 'var(--surface2)', border: '1.5px solid var(--border)',
               borderRadius: 8, padding: '8px 12px',
-              fontSize: 12, color: '#2d2a3e', lineHeight: 1.5,
+              fontSize: 12, color: 'var(--fg)', lineHeight: 1.5,
               fontFamily: "'Inter', system-ui, sans-serif",
               resize: 'none', outline: 'none',
               transition: 'border-color 0.15s',
             }}
-            onFocus={e => e.target.style.borderColor = '#c4a8ff'}
-            onBlur={e => e.target.style.borderColor = '#f0eaf7'}
+            onFocus={e => e.target.style.borderColor = 'var(--purple-bright)'}
+            onBlur={e => e.target.style.borderColor = 'var(--border)'}
           />
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: 13, color: '#a898be', margin: 0 }}>
-              <strong style={{ color: '#7c5cbf' }}>{current.label}</strong> is active. Want a study guide for this session?
+            <p style={{ fontSize: 13, color: 'var(--fg3)', margin: 0 }}>
+              <strong style={{ color: 'var(--purple-dd)' }}>{current.label}</strong> is active. Want a study guide for this session?
             </p>
             <button
               onClick={() => generate(false)}
@@ -360,10 +360,10 @@ export default function SessionGuide({ schedule, daysLeft, onSaveNote, onOpenNot
 
       {/* Loading */}
       {expanded && loading && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 0', fontSize: 13, color: '#a898be' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 0', fontSize: 13, color: 'var(--fg3)' }}>
           <div className="spin" style={{ width: 16, height: 16 }}>
             <svg viewBox="0 0 16 16" fill="none" width="16" height="16">
-              <circle cx="8" cy="8" r="6" stroke="#c4a8ff" strokeWidth="2" strokeDasharray="20 18" />
+              <circle cx="8" cy="8" r="6" stroke="var(--purple-bright)" strokeWidth="2" strokeDasharray="20 18" />
             </svg>
           </div>
           Generating your session guide…
@@ -376,7 +376,7 @@ export default function SessionGuide({ schedule, daysLeft, onSaveNote, onOpenNot
           {error}{' '}
           <button
             onClick={() => generate(false)}
-            style={{ background: 'none', border: 'none', color: '#8b6fc0', fontSize: 12, cursor: 'pointer', textDecoration: 'underline' }}
+            style={{ background: 'none', border: 'none', color: 'var(--purple-dd)', fontSize: 12, cursor: 'pointer', textDecoration: 'underline' }}
           >
             Try again
           </button>
@@ -391,7 +391,7 @@ export default function SessionGuide({ schedule, daysLeft, onSaveNote, onOpenNot
           {s["PRACTICE PROBLEMS"] && <ProblemsSection text={s["PRACTICE PROBLEMS"]} />}
           {s["RESOURCES"] && <ResourcesSection text={s["RESOURCES"]} />}
 
-          <div style={{ borderTop: '1px solid #f0eaf7', paddingTop: 14, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 14, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button
               onClick={() => setExpanded(false)}
               style={{
@@ -406,11 +406,11 @@ export default function SessionGuide({ schedule, daysLeft, onSaveNote, onOpenNot
               <button
                 onClick={handleSaveNote}
                 style={{
-                  background: savedNote ? '#e8faf3' : '#faf8ff',
-                  border: `1.5px solid ${savedNote ? '#7ee6b8' : '#f0eaf7'}`,
+                  background: savedNote ? 'var(--badge-mint-bg)' : 'var(--surface2)',
+                  border: `1.5px solid ${savedNote ? 'var(--mint-light)' : 'var(--border)'}`,
                   borderRadius: 8, padding: '8px 16px',
                   fontSize: 13, fontWeight: 500,
-                  color: savedNote ? '#3da87a' : '#8b6fc0',
+                  color: savedNote ? 'var(--mint-d)' : 'var(--purple-d)',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                   transition: 'all 0.2s',
                 }}

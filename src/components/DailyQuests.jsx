@@ -20,27 +20,27 @@ export default function DailyQuests({ quests, onQuestToggle }) {
 
   return (
     <div style={{
-      background: '#ffffff',
-      border: '1.5px solid #f0eaf7',
+      background: 'var(--surface)',
+      border: '1.5px solid var(--border)',
       borderRadius: 16, padding: '14px 16px',
       flex: 1,
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <span style={{
-          fontSize: 10, fontWeight: 500, color: '#c0aed8',
+          fontSize: 10, fontWeight: 500, color: 'var(--fg4)',
           letterSpacing: '0.08em', textTransform: 'uppercase',
         }}>
           Daily Quests
         </span>
-        <span style={{ fontSize: 10, fontWeight: 500, color: '#4ecfa0' }}>
+        <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--mint)' }}>
           {done}/{total}
         </span>
       </div>
 
       {/* Progress bar */}
       <div style={{
-        height: 4, background: '#f0eaf7', borderRadius: 4,
+        height: 4, background: 'var(--xp-track)', borderRadius: 4,
         overflow: 'hidden', marginBottom: 10,
       }}>
         <div style={{
@@ -66,7 +66,7 @@ export default function DailyQuests({ quests, onQuestToggle }) {
                     position: 'absolute', right: 8, top: 6,
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 12, fontWeight: 700,
-                    color: '#4ecfa0', pointerEvents: 'none', zIndex: 10,
+                    color: 'var(--mint)', pointerEvents: 'none', zIndex: 10,
                   }}
                 >
                   +{pop.xp}
@@ -79,15 +79,15 @@ export default function DailyQuests({ quests, onQuestToggle }) {
                   width: '100%', display: 'flex', alignItems: 'center',
                   gap: 10, padding: '7px 0',
                   background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
-                  borderBottom: isLast ? 'none' : '1px solid #faf8ff',
+                  borderBottom: isLast ? 'none' : '1px solid var(--surface2)',
                 }}
               >
                 {/* Checkbox */}
                 <div style={{
                   width: 18, height: 18, borderRadius: 6, flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: quest.done ? 'linear-gradient(135deg, #7ee6b8, #4ecfa0)' : '#faf8ff',
-                  border: quest.done ? 'none' : '1.5px solid #e0d6f0',
+                  background: quest.done ? 'linear-gradient(135deg, #7ee6b8, #4ecfa0)' : 'var(--surface2)',
+                  border: quest.done ? 'none' : '1.5px solid var(--border2)',
                   transition: 'all 0.2s ease',
                 }}>
                   {quest.done && (
@@ -100,16 +100,16 @@ export default function DailyQuests({ quests, onQuestToggle }) {
                 {/* Label */}
                 <span style={{
                   flex: 1, fontSize: 12, lineHeight: 1.4,
-                  color: quest.done ? '#a898be' : '#5c4a7e',
+                  color: quest.done ? 'var(--fg3)' : 'var(--fg2)',
                   textDecoration: quest.done ? 'line-through' : 'none',
                   transition: 'color 0.2s ease',
                 }}>
                   {quest.label}
                 </span>
 
-                {/* XP badge — opacity 0 unchecked → 1 checked */}
+                {/* XP badge */}
                 <span style={{
-                  fontSize: 10, fontWeight: 500, color: '#4ecfa0',
+                  fontSize: 10, fontWeight: 500, color: 'var(--mint)',
                   opacity: quest.done ? 1 : 0,
                   transition: 'opacity 0.3s ease',
                   flexShrink: 0,
@@ -125,9 +125,9 @@ export default function DailyQuests({ quests, onQuestToggle }) {
       {allDone && (
         <div style={{
           marginTop: 10, padding: '8px 12px', borderRadius: 10,
-          background: 'linear-gradient(135deg, #f0fdf8, #e8faf3)',
-          border: '1.5px solid #7ee6b8',
-          fontSize: 12, color: '#3da87a', fontWeight: 500, textAlign: 'center',
+          background: 'var(--badge-mint-bg)',
+          border: '1.5px solid var(--mint-light)',
+          fontSize: 12, color: 'var(--mint-d)', fontWeight: 500, textAlign: 'center',
         }}>
           🎉 All quests complete!
         </div>

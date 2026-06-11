@@ -101,7 +101,6 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
   const prevBlockId = useRef(null)
   const firstBlock = useRef(true)
 
-  /* Pulse + unread dot when block changes */
   useEffect(() => {
     if (current?.id === prevBlockId.current) return
     prevBlockId.current = current?.id
@@ -111,12 +110,10 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
     if (!open) setHasUnread(true)
   }, [current?.id, open])
 
-  /* Auto-scroll */
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  /* Welcome message on first open */
   useEffect(() => {
     if (!open) return
     setHasUnread(false)
@@ -130,7 +127,6 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
     }
   }, [open])
 
-  /* Focus input on open */
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 200)
   }, [open])
@@ -172,23 +168,23 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
         <div style={{
           position: 'fixed', bottom: 84, right: 24,
           width: 340, maxHeight: 480,
-          background: '#ffffff', border: '1.5px solid #f0eaf7',
-          borderRadius: 20, boxShadow: '0 8px 40px rgba(124,92,191,0.15)',
+          background: 'var(--surface)', border: '1.5px solid var(--border)',
+          borderRadius: 20, boxShadow: '0 8px 40px var(--shadow-panel)',
           display: 'flex', flexDirection: 'column', zIndex: 100,
           animation: 'cbSlide 0.2s ease',
           overflow: 'hidden',
         }}>
           {/* Panel header */}
-          <div style={{ padding: '14px 16px', borderBottom: '1.5px solid #f0eaf7', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <div style={{ padding: '14px 16px', borderBottom: '1.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
             <div>
-              <p style={{ fontSize: 13, fontWeight: 600, color: '#2d2a3e', margin: 0 }}>Study Buddy</p>
-              <p style={{ fontSize: 11, color: '#a898be', margin: '2px 0 0' }}>Online · knows your schedule</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg)', margin: 0 }}>Study Buddy</p>
+              <p style={{ fontSize: 11, color: 'var(--fg3)', margin: '2px 0 0' }}>Online · knows your schedule</p>
             </div>
             <button
               onClick={() => setOpen(false)}
-              style={{ background: '#f5f1fc', border: 'none', borderRadius: '50%', width: 28, height: 28, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8b6fc0' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#e0d6f0'}
-              onMouseLeave={e => e.currentTarget.style.background = '#f5f1fc'}
+              style={{ background: 'var(--surface3)', border: 'none', borderRadius: '50%', width: 28, height: 28, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--purple-d)' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--surface4)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'var(--surface3)'}
             >
               <X size={13} />
             </button>
@@ -215,22 +211,22 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
                     dangerouslySetInnerHTML={{ __html: mdToHtml(msg.content) }}
                     style={{
                       maxWidth: '88%',
-                      background: '#faf8ff',
-                      color: '#5c4a7e',
+                      background: 'var(--surface2)',
+                      color: 'var(--fg2)',
                       borderRadius: '16px 16px 16px 4px',
                       padding: '9px 13px', fontSize: 13,
                       wordBreak: 'break-word',
                     }}
                   />
                 )}
-                <span style={{ fontSize: 10, color: '#c0aed8', marginTop: 3, padding: '0 4px' }}>
+                <span style={{ fontSize: 10, color: 'var(--fg4)', marginTop: 3, padding: '0 4px' }}>
                   {fmt(msg.time)}
                 </span>
               </div>
             ))}
             {loading && (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <div style={{ background: '#faf8ff', borderRadius: '16px 16px 16px 4px', padding: '9px 13px' }}>
+                <div style={{ background: 'var(--surface2)', borderRadius: '16px 16px 16px 4px', padding: '9px 13px' }}>
                   <LoadingDots />
                 </div>
               </div>
@@ -239,7 +235,7 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
           </div>
 
           {/* Input row */}
-          <div style={{ padding: '10px 12px', borderTop: '1.5px solid #f0eaf7', display: 'flex', gap: 8, flexShrink: 0 }}>
+          <div style={{ padding: '10px 12px', borderTop: '1.5px solid var(--border)', display: 'flex', gap: 8, flexShrink: 0 }}>
             <textarea
               ref={inputRef}
               value={input}
@@ -248,22 +244,22 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
               placeholder="Ask anything…"
               rows={1}
               style={{
-                flex: 1, resize: 'none', border: '1.5px solid #f0eaf7',
+                flex: 1, resize: 'none', border: '1.5px solid var(--border)',
                 borderRadius: 10, padding: '8px 10px', fontSize: 13,
-                color: '#2d2a3e', outline: 'none',
+                color: 'var(--fg)', outline: 'none',
                 fontFamily: "'Inter', system-ui, sans-serif",
-                background: '#faf8ff', lineHeight: 1.4,
+                background: 'var(--surface2)', lineHeight: 1.4,
                 transition: 'border-color 0.15s, box-shadow 0.15s',
               }}
-              onFocus={e => { e.target.style.borderColor = '#c4a8ff'; e.target.style.boxShadow = '0 0 0 3px rgba(196,168,255,0.15)' }}
-              onBlur={e => { e.target.style.borderColor = '#f0eaf7'; e.target.style.boxShadow = 'none' }}
+              onFocus={e => { e.target.style.borderColor = 'var(--purple-bright)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,168,255,0.15)' }}
+              onBlur={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none' }}
             />
             <button
               onClick={send}
               disabled={!input.trim() || loading}
               style={{
                 width: 36, height: 36, borderRadius: 10, border: 'none',
-                background: input.trim() && !loading ? 'linear-gradient(135deg, #b794f4, #e88d67)' : '#e0d6f0',
+                background: input.trim() && !loading ? 'linear-gradient(135deg, #b794f4, #e88d67)' : 'var(--surface4)',
                 cursor: input.trim() && !loading ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, alignSelf: 'flex-end',
@@ -287,7 +283,6 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 4px 20px rgba(124,92,191,0.2)',
           animation: pulse ? 'cbPulse 0.5s ease' : 'none',
-          position: 'fixed',
         }}
       >
         <MessageCircle size={20} color="#ffffff" />
@@ -295,7 +290,7 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
           <span style={{
             position: 'absolute', top: 2, right: 2,
             width: 8, height: 8, borderRadius: '50%',
-            background: '#4ecfa0', border: '1.5px solid #ffffff',
+            background: '#4ecfa0', border: '1.5px solid var(--surface)',
           }} />
         )}
       </button>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { DEFAULT_SCHEDULE, DEFAULT_GOALS, DEFAULT_RESOURCES, DEFAULT_TROPHIES } from './constants/defaults'
 import { useDailyReset } from './hooks/useDailyReset'
 import { useXP } from './hooks/useXP'
@@ -218,7 +219,8 @@ export default function App() {
   }
 
   return (
-    <div style={{ background: '#fefcfa', minHeight: '100vh' }}>
+    <ThemeProvider>
+    <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
       <div style={{ maxWidth: 880, margin: '0 auto', padding: '16px 24px 48px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
@@ -310,5 +312,6 @@ export default function App() {
         onResetAll={onResetAll}
       />
     </div>
+    </ThemeProvider>
   )
 }

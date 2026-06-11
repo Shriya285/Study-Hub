@@ -32,9 +32,7 @@ function getSummary(schedule) {
   const studyBlocks = schedule.filter(b => !b.isBreak)
   const totalStudyMin = studyBlocks.reduce((s, b) => s + toMin(b.end) - toMin(b.start), 0)
   const doneBlocks = schedule.filter(b => nowMin >= toMin(b.end))
-  const doneStudyMin = doneBlocks.filter(b => !b.isBreak).reduce((s, b) => s + toMin(b.end) - toMin(b.start), 0)
-  const lastEnd = schedule.length ? toMin(schedule[schedule.length - 1].end) : nowMin
-  const remMin = Math.max(0, lastEnd - nowMin)
+  const remMin = Math.max(0, (schedule.length ? toMin(schedule[schedule.length - 1].end) : nowMin) - nowMin)
   const remH = Math.floor(remMin / 60), remM = remMin % 60
   const remStr = remH > 0 ? `${remH}h${remM > 0 ? ` ${remM}m` : ''}` : `${remM}m`
   const totalH = Math.floor(totalStudyMin / 60)
@@ -61,9 +59,9 @@ export default function ScheduleStrip({ schedule }) {
   if (!schedule?.length) {
     return (
       <div style={{
-        background: '#faf8ff', border: '1.5px solid #f0eaf7',
+        background: 'var(--surface2)', border: '1.5px solid var(--border)',
         borderRadius: 12, padding: '12px 16px',
-        fontSize: 12, color: '#a898be', textAlign: 'center',
+        fontSize: 12, color: 'var(--fg3)', textAlign: 'center',
       }}>
         No schedule yet — add blocks in Settings ⚙️
       </div>
@@ -74,7 +72,7 @@ export default function ScheduleStrip({ schedule }) {
 
   return (
     <div>
-      <p style={{ fontSize: 11, color: '#c0aed8', marginBottom: 8, letterSpacing: '0.01em' }}>{summary}</p>
+      <p style={{ fontSize: 11, color: 'var(--fg4)', marginBottom: 8, letterSpacing: '0.01em' }}>{summary}</p>
       <div
         ref={stripRef}
         className="no-scrollbar"
@@ -94,10 +92,10 @@ export default function ScheduleStrip({ schedule }) {
               style={{
                 minWidth: 86, flexShrink: 0,
                 padding: '8px 10px', borderRadius: 12,
-                border: `1.5px solid ${isActive ? '#d8c4f0' : '#f0eaf7'}`,
+                border: `1.5px solid ${isActive ? 'var(--border2)' : 'var(--border)'}`,
                 background: isActive
-                  ? 'linear-gradient(135deg, #fef8f4, #f8f0ff)'
-                  : block.isBreak ? '#faf8ff' : '#ffffff',
+                  ? 'var(--surface3)'
+                  : block.isBreak ? 'var(--surface2)' : 'var(--surface)',
                 opacity: isPast ? 0.32 : 1,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', gap: 3,
@@ -106,10 +104,13 @@ export default function ScheduleStrip({ schedule }) {
                 overflow: 'hidden',
               }}
             >
-              <Icon size={14} color={isActive ? '#8b6fc0' : isPast ? '#4ecfa0' : '#a898be'} />
+              <Icon
+                size={14}
+                color={isActive ? 'var(--purple-d)' : isPast ? 'var(--mint)' : 'var(--fg3)'}
+              />
               <span style={{
                 fontSize: 11, fontWeight: 500,
-                color: isActive ? '#5c4a7e' : '#6e6088',
+                color: isActive ? 'var(--fg2)' : 'var(--fg2)',
                 whiteSpace: 'nowrap',
                 textDecoration: isPast ? 'line-through' : 'none',
                 fontStyle: block.isBreak ? 'italic' : 'normal',
@@ -118,22 +119,22 @@ export default function ScheduleStrip({ schedule }) {
               </span>
               <span style={{
                 fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 9, color: '#c0aed8',
+                fontSize: 9, color: 'var(--fg4)',
               }}>
                 {block.start}
               </span>
               {block.durationLabel && (
-                <span style={{ fontSize: 8, color: '#c0aed8' }}>{block.durationLabel}</span>
+                <span style={{ fontSize: 8, color: 'var(--fg4)' }}>{block.durationLabel}</span>
               )}
               {isActive && (
                 <div style={{
                   position: 'absolute', bottom: 0, left: 0, right: 0,
-                  height: 3, background: '#f0eaf7',
+                  height: 3, background: 'var(--xp-track)',
                 }}>
                   <div style={{
                     height: '100%',
                     width: `${Math.round(prog * 100)}%`,
-                    background: '#4ecfa0',
+                    background: 'var(--mint)',
                     transition: 'width 0.5s ease',
                   }} />
                 </div>

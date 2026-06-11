@@ -14,15 +14,15 @@ export default function Trophies({ trophies }) {
 
   return (
     <div style={{
-      background: '#ffffff',
-      border: '1.5px solid #f0eaf7',
+      background: 'var(--surface)',
+      border: '1.5px solid var(--border)',
       borderRadius: 16, padding: '12px 14px',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#5c4a7e' }}>Trophies</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg2)' }}>Trophies</span>
         <span style={{
           fontSize: 10, fontWeight: 600,
-          background: '#f5f1fc', color: '#8b6fc0',
+          background: 'var(--surface3)', color: 'var(--purple-d)',
           padding: '2px 8px', borderRadius: 10,
         }}>
           {earned}/{DEFS.length}
@@ -39,15 +39,15 @@ export default function Trophies({ trophies }) {
               style={{
                 width: 30, height: 30, borderRadius: 9, flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: isEarned ? '#fff7ed' : '#faf8ff',
-                border: `1.5px solid ${isEarned ? '#fde0c4' : '#f0eaf7'}`,
+                background: isEarned ? 'var(--badge-peach-bg)' : 'var(--surface2)',
+                border: `1.5px solid ${isEarned ? 'var(--border2)' : 'var(--border)'}`,
                 opacity: isEarned ? 1 : 0.3,
                 cursor: 'default',
               }}
             >
               {isEarned
-                ? <Icon size={14} color="#e88d67" />
-                : <Lock size={11} color="#c0aed8" />
+                ? <Icon size={14} color="var(--peach)" />
+                : <Lock size={11} color="var(--fg4)" />
               }
             </div>
           )
@@ -55,7 +55,7 @@ export default function Trophies({ trophies }) {
       </div>
 
       {earned > 0 && (
-        <p style={{ fontSize: 10, color: '#c0aed8', margin: '8px 0 0' }}>
+        <p style={{ fontSize: 10, color: 'var(--fg4)', margin: '8px 0 0' }}>
           {DEFS.filter(d => trophies[d.key]).map(d => d.label).join(' · ')}
         </p>
       )}

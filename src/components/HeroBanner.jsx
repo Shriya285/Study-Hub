@@ -65,8 +65,8 @@ export default function HeroBanner({ schedule, poms, questsDone, questsTotal }) 
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #fef8f4, #fdf2ff, #f4f0ff)',
-      border: '1.5px solid #f0eaf7',
+      background: 'var(--hero-bg)',
+      border: '1.5px solid var(--border)',
       borderRadius: 18,
       padding: '18px 22px',
     }}>
@@ -75,27 +75,27 @@ export default function HeroBanner({ schedule, poms, questsDone, questsTotal }) 
         <div style={{ flex: 1, minWidth: 0 }}>
           <span style={{
             fontSize: 9, fontWeight: 600, letterSpacing: '0.1em',
-            color: '#c9a0e8', textTransform: 'uppercase',
+            color: 'var(--purple)', textTransform: 'uppercase',
             display: 'block', marginBottom: 4,
           }}>
             {tag}
           </span>
           <p style={{
-            fontSize: 18, fontWeight: 500, color: '#2d2a3e',
+            fontSize: 18, fontWeight: 500, color: 'var(--fg)',
             margin: '0 0 3px', lineHeight: 1.3,
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {title}
           </p>
-          <p style={{ fontSize: 12, color: '#a898be', margin: 0 }}>{subtitle}</p>
+          <p style={{ fontSize: 12, color: 'var(--fg3)', margin: 0 }}>{subtitle}</p>
 
           {showProgress && (
             <div style={{ marginTop: 8 }}>
-              <div style={{ height: 4, background: '#f0eaf7', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ height: 4, background: 'var(--xp-track)', borderRadius: 4, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', borderRadius: 4,
                   width: `${pct}%`,
-                  background: '#c4a8ff',
+                  background: 'var(--purple-bright)',
                   transition: 'width 0.5s ease',
                 }} />
               </div>
@@ -103,7 +103,7 @@ export default function HeroBanner({ schedule, poms, questsDone, questsTotal }) 
           )}
 
           {extraLine && (
-            <p style={{ fontSize: 11, color: '#c0aed8', margin: '5px 0 0' }}>{extraLine}</p>
+            <p style={{ fontSize: 11, color: 'var(--fg4)', margin: '5px 0 0' }}>{extraLine}</p>
           )}
         </div>
 
@@ -111,16 +111,16 @@ export default function HeroBanner({ schedule, poms, questsDone, questsTotal }) 
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
           <p style={{
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 22, fontWeight: 500, color: '#c4a8ff',
+            fontSize: 22, fontWeight: 500, color: 'var(--purple-bright)',
             margin: 0, lineHeight: 1, letterSpacing: '0.03em',
           }}>
             {rightTop}
           </p>
           {rightSub && (
-            <p style={{ fontSize: 11, color: '#c0aed8', margin: '4px 0 0' }}>{rightSub}</p>
+            <p style={{ fontSize: 11, color: 'var(--fg4)', margin: '4px 0 0' }}>{rightSub}</p>
           )}
           {next && status === 'active' && !current?.isBreak && (
-            <p style={{ fontSize: 11, color: '#c0aed8', margin: '3px 0 0', maxWidth: 130 }}>
+            <p style={{ fontSize: 11, color: 'var(--fg4)', margin: '3px 0 0', maxWidth: 130 }}>
               Next: {next.label} at {next.start}
             </p>
           )}

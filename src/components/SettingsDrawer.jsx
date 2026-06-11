@@ -27,17 +27,17 @@ const BLOCK_ICONS = [
 /* ─── shared style helpers ─────────────────────────────── */
 const LABEL = {
   display: 'block', fontSize: 11, fontWeight: 500,
-  color: '#a898be', textTransform: 'uppercase',
+  color: 'var(--fg3)', textTransform: 'uppercase',
   letterSpacing: '0.07em', marginBottom: 5,
 }
 
 function inp(focused) {
   return {
     width: '100%',
-    background: '#ffffff',
-    border: `1.5px solid ${focused ? '#c4a8ff' : '#f0eaf7'}`,
+    background: 'var(--surface)',
+    border: `1.5px solid ${focused ? 'var(--purple-bright)' : 'var(--border)'}`,
     borderRadius: 8, padding: '9px 12px',
-    fontSize: 13, color: '#2d2a3e', outline: 'none',
+    fontSize: 13, color: 'var(--fg)', outline: 'none',
     fontFamily: "'Inter', system-ui, sans-serif",
     boxShadow: focused ? '0 0 0 3px rgba(196,168,255,0.15)' : 'none',
     transition: 'border-color 0.15s, box-shadow 0.15s',
@@ -47,18 +47,19 @@ function inp(focused) {
 function inlineInp(focused) {
   return {
     background: 'none', border: 'none', outline: 'none',
-    borderBottom: `1.5px solid ${focused ? '#c4a8ff' : 'transparent'}`,
+    borderBottom: `1.5px solid ${focused ? 'var(--purple-bright)' : 'transparent'}`,
     transition: 'border-color 0.15s', padding: '2px 0',
+    color: 'var(--fg)',
   }
 }
 
 function addBtn(hov) {
   return {
     width: '100%', height: 40,
-    border: '1.5px dashed #e0d6f0', borderRadius: 10,
-    background: hov ? '#faf8ff' : 'transparent',
+    border: '1.5px dashed var(--border2)', borderRadius: 10,
+    background: hov ? 'var(--surface2)' : 'transparent',
     cursor: 'pointer', fontSize: 13,
-    color: hov ? '#7c5cbf' : '#8b6fc0',
+    color: hov ? 'var(--purple-dd)' : 'var(--purple-d)',
     display: 'flex', alignItems: 'center',
     justifyContent: 'center', gap: 6,
     transition: 'all 0.15s', marginTop: 4,
@@ -166,13 +167,13 @@ function IconPicker({ value, onChange }) {
         title="Change icon"
         style={{
           width: 32, height: 32, borderRadius: 8,
-          background: open ? '#f0eaf7' : '#faf8ff',
-          border: `1.5px solid ${open ? '#c4a8ff' : '#f0eaf7'}`,
+          background: open ? 'var(--border)' : 'var(--surface2)',
+          border: `1.5px solid ${open ? 'var(--purple-bright)' : 'var(--border)'}`,
           cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#8b6fc0', transition: 'all 0.15s', flexShrink: 0,
+          color: 'var(--purple-d)', transition: 'all 0.15s', flexShrink: 0,
         }}
-        onMouseEnter={e => { if (!open) e.currentTarget.style.borderColor = '#e0d6f0' }}
-        onMouseLeave={e => { if (!open) e.currentTarget.style.borderColor = '#f0eaf7' }}
+        onMouseEnter={e => { if (!open) e.currentTarget.style.borderColor = 'var(--border2)' }}
+        onMouseLeave={e => { if (!open) e.currentTarget.style.borderColor = 'var(--border)' }}
       >
         <CurrentIcon size={15} />
       </button>
@@ -184,7 +185,7 @@ function IconPicker({ value, onChange }) {
           />
           <div style={{
             position: 'absolute', top: '100%', left: 0, zIndex: 30, marginTop: 4,
-            background: '#fff', border: '1.5px solid #f0eaf7', borderRadius: 12,
+            background: 'var(--surface)', border: '1.5px solid var(--border)', borderRadius: 12,
             boxShadow: '0 4px 20px rgba(124,92,191,0.14)', padding: 8,
             display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 3,
             width: 176,
@@ -196,12 +197,12 @@ function IconPicker({ value, onChange }) {
                 title={key}
                 style={{
                   width: 30, height: 30, borderRadius: 6, border: 'none',
-                  background: value === key ? '#f0eaf7' : 'none',
-                  color: value === key ? '#7c5cbf' : '#8b6fc0',
+                  background: value === key ? 'var(--border)' : 'none',
+                  color: value === key ? 'var(--purple-dd)' : 'var(--purple-d)',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'background 0.1s',
                 }}
-                onMouseEnter={e => { if (value !== key) e.currentTarget.style.background = '#faf8ff' }}
+                onMouseEnter={e => { if (value !== key) e.currentTarget.style.background = 'var(--surface2)' }}
                 onMouseLeave={e => { if (value !== key) e.currentTarget.style.background = 'none' }}
               >
                 <Icon size={14} />
@@ -233,9 +234,9 @@ function ScheduleTab({ local, setLocal }) {
     <div>
       {local.schedule.map(block => (
         <div key={block.id} style={{
-          background: '#ffffff',
-          border: '1.5px solid #f0eaf7',
-          borderLeft: `3px solid ${block.isBreak ? '#e0d6f0' : '#c4a8ff'}`,
+          background: 'var(--surface)',
+          border: '1.5px solid var(--border)',
+          borderLeft: `3px solid ${block.isBreak ? 'var(--border2)' : 'var(--purple-bright)'}`,
           borderRadius: '4px 12px 12px 4px',
           padding: '12px 14px', marginBottom: 8,
         }}>
@@ -246,7 +247,7 @@ function ScheduleTab({ local, setLocal }) {
               value={block.label}
               onChange={e => upd(block.id, 'label', e.target.value)}
               placeholder="Block name"
-              style={{ flex: 1, fontSize: 13, fontWeight: 500, color: '#2d2a3e' }}
+              style={{ flex: 1, fontSize: 13, fontWeight: 500 }}
             />
             <Trash onClick={() => del(block.id)} />
           </div>
@@ -255,27 +256,27 @@ function ScheduleTab({ local, setLocal }) {
             value={block.subtitle || ''}
             onChange={e => upd(block.id, 'subtitle', e.target.value)}
             placeholder="Subtitle (optional)"
-            style={{ width: '100%', fontSize: 12, color: '#a898be', marginBottom: 8, display: 'block' }}
+            style={{ width: '100%', fontSize: 12, color: 'var(--fg3)', marginBottom: 8, display: 'block' }}
           />
           {/* Row 3: times + break toggle */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <input type="time" value={block.start}
               onChange={e => upd(block.id, 'start', e.target.value)}
               style={{
-                background: '#faf8ff', border: '1.5px solid #f0eaf7',
+                background: 'var(--surface2)', border: '1.5px solid var(--border)',
                 borderRadius: 8, padding: '5px 10px',
                 fontSize: 12, fontFamily: "'JetBrains Mono', monospace",
-                color: '#5c4a7e', outline: 'none', width: 100,
+                color: 'var(--fg2)', outline: 'none', width: 100,
               }}
             />
-            <span style={{ color: '#c0aed8', fontSize: 12 }}>–</span>
+            <span style={{ color: 'var(--fg4)', fontSize: 12 }}>–</span>
             <input type="time" value={block.end}
               onChange={e => upd(block.id, 'end', e.target.value)}
               style={{
-                background: '#faf8ff', border: '1.5px solid #f0eaf7',
+                background: 'var(--surface2)', border: '1.5px solid var(--border)',
                 borderRadius: 8, padding: '5px 10px',
                 fontSize: 12, fontFamily: "'JetBrains Mono', monospace",
-                color: '#5c4a7e', outline: 'none', width: 100,
+                color: 'var(--fg2)', outline: 'none', width: 100,
               }}
             />
             <label style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
@@ -283,7 +284,7 @@ function ScheduleTab({ local, setLocal }) {
                 onClick={() => upd(block.id, 'isBreak', !block.isBreak)}
                 style={{
                   width: 28, height: 16, borderRadius: 8,
-                  background: block.isBreak ? '#c4a8ff' : '#e0d6f0',
+                  background: block.isBreak ? 'var(--purple-bright)' : 'var(--surface4)',
                   position: 'relative', cursor: 'pointer',
                   transition: 'background 0.2s', flexShrink: 0,
                 }}
@@ -296,7 +297,7 @@ function ScheduleTab({ local, setLocal }) {
                   transition: 'left 0.2s',
                 }} />
               </div>
-              <span style={{ fontSize: 11, color: '#a898be' }}>Break</span>
+              <span style={{ fontSize: 11, color: 'var(--fg3)' }}>Break</span>
             </label>
           </div>
         </div>
@@ -322,11 +323,11 @@ function QuestsTab({ local, setLocal }) {
     <div>
       {local.goals.map(goal => (
         <div key={goal.id} style={{
-          background: '#ffffff', border: '1.5px solid #f0eaf7',
+          background: 'var(--surface)', border: '1.5px solid var(--border)',
           borderRadius: 10, padding: '10px 12px', marginBottom: 6,
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
-          <span style={{ color: '#e0d6f0', fontSize: 14, cursor: 'grab', flexShrink: 0 }}>⠿</span>
+          <span style={{ color: 'var(--border2)', fontSize: 14, cursor: 'grab', flexShrink: 0 }}>⠿</span>
           <input
             type="text"
             value={goal.label}
@@ -334,12 +335,12 @@ function QuestsTab({ local, setLocal }) {
             placeholder="Quest label"
             style={{
               flex: 1, background: 'none', border: 'none',
-              fontSize: 13, color: '#2d2a3e', outline: 'none',
+              fontSize: 13, color: 'var(--fg)', outline: 'none',
             }}
           />
           <div style={{
             display: 'flex', alignItems: 'center', gap: 4,
-            background: '#faf8ff', border: '1.5px solid #f0eaf7',
+            background: 'var(--surface2)', border: '1.5px solid var(--border)',
             borderRadius: 6, padding: '3px 6px', flexShrink: 0,
           }}>
             <input
@@ -351,10 +352,10 @@ function QuestsTab({ local, setLocal }) {
                 width: 32, textAlign: 'center',
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 12, background: 'none', border: 'none',
-                color: '#4ecfa0', outline: 'none',
+                color: 'var(--mint)', outline: 'none',
               }}
             />
-            <span style={{ fontSize: 10, color: '#a898be' }}>XP</span>
+            <span style={{ fontSize: 10, color: 'var(--fg3)' }}>XP</span>
           </div>
           <Trash onClick={() => del(goal.id)} />
         </div>
@@ -380,7 +381,7 @@ function LinksTab({ local, setLocal }) {
     <div>
       {local.resources.map(r => (
         <div key={r.id} style={{
-          background: '#ffffff', border: '1.5px solid #f0eaf7',
+          background: 'var(--surface)', border: '1.5px solid var(--border)',
           borderRadius: 10, padding: '10px 14px', marginBottom: 6,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
@@ -388,7 +389,7 @@ function LinksTab({ local, setLocal }) {
               value={r.label}
               onChange={e => upd(r.id, 'label', e.target.value)}
               placeholder="Link name"
-              style={{ flex: 1, fontSize: 13, fontWeight: 500, color: '#2d2a3e' }}
+              style={{ flex: 1, fontSize: 13, fontWeight: 500 }}
             />
             <Trash onClick={() => del(r.id)} />
           </div>
@@ -396,7 +397,7 @@ function LinksTab({ local, setLocal }) {
             value={r.url || ''}
             onChange={e => upd(r.id, 'url', e.target.value)}
             placeholder="https://..."
-            style={{ width: '100%', fontSize: 12, color: '#a898be', display: 'block' }}
+            style={{ width: '100%', fontSize: 12, color: 'var(--fg3)', display: 'block' }}
           />
         </div>
       ))}
@@ -430,7 +431,7 @@ function DangerTab({ onResetStreak, onResetAll, onClose }) {
   function GhostBtn({ onClick, children }) {
     return (
       <button onClick={onClick}
-        style={{ background: 'none', border: 'none', color: '#a898be', fontSize: 12, cursor: 'pointer', padding: '4px 8px' }}>
+        style={{ background: 'none', border: 'none', color: 'var(--fg3)', fontSize: 12, cursor: 'pointer', padding: '4px 8px' }}>
         {children}
       </button>
     )
@@ -440,8 +441,8 @@ function DangerTab({ onResetStreak, onResetAll, onClose }) {
     <div>
       {/* Reset streak */}
       <div style={{ marginBottom: 20 }}>
-        <p style={{ fontSize: 13, fontWeight: 500, color: '#2d2a3e', marginBottom: 4 }}>Reset Streak</p>
-        <p style={{ fontSize: 12, color: '#a898be', marginBottom: 10, lineHeight: 1.5 }}>
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg)', marginBottom: 4 }}>Reset Streak</p>
+        <p style={{ fontSize: 12, color: 'var(--fg3)', marginBottom: 10, lineHeight: 1.5 }}>
           Resets your day streak to 0. Cannot be undone.
         </p>
         {!confirmStreak ? (
@@ -456,12 +457,12 @@ function DangerTab({ onResetStreak, onResetAll, onClose }) {
         )}
       </div>
 
-      <div style={{ height: 1, background: '#f0eaf7', marginBottom: 20 }} />
+      <div style={{ height: 1, background: 'var(--border)', marginBottom: 20 }} />
 
       {/* Reset all */}
       <div>
-        <p style={{ fontSize: 13, fontWeight: 500, color: '#2d2a3e', marginBottom: 4 }}>Reset All Progress</p>
-        <p style={{ fontSize: 12, color: '#a898be', marginBottom: 10, lineHeight: 1.5 }}>
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg)', marginBottom: 4 }}>Reset All Progress</p>
+        <p style={{ fontSize: 12, color: 'var(--fg3)', marginBottom: 10, lineHeight: 1.5 }}>
           Clears XP, trophies, streak, and today's quests.<br />
           Your schedule and settings are kept.
         </p>
@@ -514,8 +515,8 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
 
       <div style={{
         position: 'fixed', top: 0, right: 0, height: '100%', width: 400,
-        background: '#fefcfa',
-        borderLeft: '2px solid #f0eaf7',
+        background: 'var(--bg)',
+        borderLeft: '2px solid var(--border)',
         boxShadow: '-8px 0 32px rgba(124,92,191,0.06)',
         zIndex: 50,
         display: 'flex', flexDirection: 'column',
@@ -526,13 +527,13 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
         {/* ── Header ── */}
         <div style={{ padding: '20px 20px 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <span style={{ fontSize: 16, fontWeight: 500, color: '#2d2a3e' }}>Settings</span>
+            <span style={{ fontSize: 16, fontWeight: 500, color: 'var(--fg)' }}>Settings</span>
             <button
               onClick={onClose}
               style={{
                 width: 28, height: 28, borderRadius: '50%', border: 'none', cursor: 'pointer',
-                background: closeHov ? '#e0d6f0' : '#f5f1fc',
-                color: '#8b6fc0',
+                background: closeHov ? 'var(--surface4)' : 'var(--surface3)',
+                color: 'var(--purple-d)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 0.15s',
               }}
@@ -544,7 +545,7 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
           </div>
 
           {/* ── Tab row ── */}
-          <div style={{ display: 'flex', gap: 2, borderBottom: '1.5px solid #f0eaf7' }}>
+          <div style={{ display: 'flex', gap: 2, borderBottom: '1.5px solid var(--border)' }}>
             {TABS.map(tab => {
               const isActive = activeTab === tab.id
               const isDanger = tab.id === 'danger'
@@ -556,11 +557,11 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
                     padding: '8px 12px',
                     fontSize: 13, fontWeight: 500,
                     borderRadius: '8px 8px 0 0',
-                    border: isActive ? '1.5px solid #f0eaf7' : 'none',
-                    borderBottom: isActive ? '2px solid #fefcfa' : 'none',
+                    border: isActive ? '1.5px solid var(--border)' : 'none',
+                    borderBottom: isActive ? '2px solid var(--bg)' : 'none',
                     marginBottom: isActive ? -2 : 0,
-                    background: isActive ? '#fefcfa' : 'transparent',
-                    color: isActive ? (isDanger ? '#e57373' : '#7c5cbf') : '#c0aed8',
+                    background: isActive ? 'var(--bg)' : 'transparent',
+                    color: isActive ? (isDanger ? '#e57373' : 'var(--purple-dd)') : 'var(--fg4)',
                     cursor: 'pointer', outline: 'none',
                     transition: 'color 0.15s',
                     whiteSpace: 'nowrap',
@@ -590,21 +591,21 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
 
         {/* ── Save bar ── */}
         <div style={{
-          background: '#fefcfa',
-          borderTop: '1.5px solid #f0eaf7',
+          background: 'var(--bg)',
+          borderTop: '1.5px solid var(--border)',
           padding: '14px 20px',
           display: 'flex', justifyContent: 'flex-end', gap: 8,
         }}>
           <button
             onClick={onClose}
             style={{
-              background: 'transparent', border: '1.5px solid #f0eaf7',
+              background: 'transparent', border: '1.5px solid var(--border)',
               borderRadius: 8, padding: '8px 18px',
-              fontSize: 13, fontWeight: 500, color: '#a898be', cursor: 'pointer',
+              fontSize: 13, fontWeight: 500, color: 'var(--fg3)', cursor: 'pointer',
               transition: 'border-color 0.15s',
             }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = '#e0d6f0'}
-            onMouseLeave={e => e.currentTarget.style.borderColor = '#f0eaf7'}
+            onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border2)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
           >
             Cancel
           </button>
