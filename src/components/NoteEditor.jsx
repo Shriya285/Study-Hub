@@ -13,6 +13,7 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
   const [customInput, setCustomInput] = useState('')
   const editorRef = useRef(null)
   const saveTimer = useRef(null)
+  const savedSelRef = useRef(null)
 
   useEffect(() => {
     if (editorRef.current) {
@@ -38,6 +39,50 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
 
   function execCmd(cmd) {
     document.execCommand(cmd, false, null)
+    editorRef.current?.focus()
+    autoSave()
+  }
+
+  function handleKeyDown(e) {
+    if (e.key !== ' ') return
+    const sel = window.getSelection()
+    if (!sel?.rangeCount || !sel.getRangeAt(0).collapsed) return
+    const range = sel.getRangeAt(0)
+    if (!editorRef.current?.contains(range.startContainer)) return
+    const node = range.startContainer
+    if (node.nodeType !== Node.TEXT_NODE) return
+    const text = node.textContent.slice(0, range.startOffset)
+    if (text === '-' || text === '*') {
+      e.preventDefault()
+      const r = document.createRange()
+      r.setStart(node, 0); r.setEnd(node, range.startOffset)
+      sel.removeAllRanges(); sel.addRange(r)
+      document.execCommand('delete', false, null)
+      document.execCommand('insertUnorderedList', false, null)
+      autoSave()
+    } else if (text === '1.') {
+      e.preventDefault()
+      const r = document.createRange()
+      r.setStart(node, 0); r.setEnd(node, range.startOffset)
+      sel.removeAllRanges(); sel.addRange(r)
+      document.execCommand('delete', false, null)
+      document.execCommand('insertOrderedList', false, null)
+      autoSave()
+    }
+  }
+
+  function saveSelForFormat() {
+    const sel = window.getSelection()
+    savedSelRef.current = sel?.rangeCount ? sel.getRangeAt(0).cloneRange() : null
+  }
+
+  function applyFormat(blockTag) {
+    if (savedSelRef.current) {
+      const sel = window.getSelection()
+      sel.removeAllRanges()
+      sel.addRange(savedSelRef.current)
+    }
+    document.execCommand('formatBlock', false, blockTag)
     editorRef.current?.focus()
     autoSave()
   }
@@ -169,8 +214,33 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
       {/* Toolbar */}
       <div style={{
         display: 'flex', gap: 4, padding: '8px 16px',
-        borderBottom: '1.5px solid #f0eaf7', flexShrink: 0,
+        borderBottom: '1.5px solid #f0eaf7', flexShrink: 0, flexWrap: 'wrap', alignItems: 'center',
       }}>
+        {/* Format block select */}
+        <select
+          title="Text style"
+          defaultValue=""
+          onMouseDown={saveSelForFormat}
+          onChange={e => {
+            applyFormat(e.target.value)
+            e.target.value = ''
+          }}
+          style={{
+            height: 28, borderRadius: 6, border: '1.5px solid #f0eaf7',
+            background: '#faf8ff', color: '#8b6fc0', fontSize: 11,
+            padding: '0 6px', cursor: 'pointer', outline: 'none',
+            fontFamily: "'Inter', system-ui, sans-serif",
+          }}
+        >
+          <option value="" disabled>Style</option>
+          <option value="p">Normal</option>
+          <option value="h1">Title</option>
+          <option value="h2">Heading</option>
+          <option value="h3">Subheading</option>
+        </select>
+
+        <div style={{ width: 1, height: 20, background: '#f0eaf7', flexShrink: 0 }} />
+
         {toolbarBtns.map((btn, i) => (
           <button
             key={i}
@@ -198,6 +268,7 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
         suppressContentEditableWarning
         data-placeholder="Start writing... your notes auto-save"
         className="note-editor-area"
+        onKeyDown={handleKeyDown}
         onInput={() => {
           const el = editorRef.current
           if (el) {
