@@ -393,12 +393,26 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
         </div>
       )}
 
+      {/* Spotify player — floats bottom-right above the bar */}
+      {spotifyUrl && !showSpotify && (
+        <div style={{ position: 'absolute', bottom: 76, right: 24, zIndex: 2 }}>
+          <iframe
+            src={toEmbedUrl(spotifyUrl)}
+            width="300" height="152"
+            frameBorder="0"
+            allowFullScreen
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            style={{ borderRadius: 12, display: 'block' }}
+          />
+        </div>
+      )}
+
       {/* Bottom bar */}
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         background: 'linear-gradient(to top, rgba(0,0,0,0.65), transparent)',
         padding: '16px 24px 20px',
-        display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
+        display: 'flex', alignItems: 'center', gap: 14,
       }}>
         <div style={{ display: 'flex', gap: 6 }}>
           {SOUNDS.map(s => (
@@ -421,18 +435,8 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
           </div>
         )}
 
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-          {spotifyUrl && !showSpotify && (
-            <iframe
-              src={toEmbedUrl(spotifyUrl)}
-              width="260" height="80"
-              frameBorder="0"
-              allowFullScreen
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-              style={{ borderRadius: 10 }}
-            />
-          )}
+        {/* Spotify connect / edit button — always visible in bar */}
+        <div style={{ marginLeft: 'auto' }}>
           {!showSpotify && (
             <button
               onClick={() => setShowSpotify(true)}
