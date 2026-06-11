@@ -1,5 +1,28 @@
 import { useState, useEffect } from 'react'
-import { X, Plus, Trash2 } from 'lucide-react'
+import { X, Plus, Trash2, Sun, Code2, Coffee, BookOpen, Utensils, Terminal, Send, PenLine, Zap, Moon, Brain, Clock, Laptop2, Flame, Target, Dumbbell, Music, FileText, Globe, Star } from 'lucide-react'
+
+const BLOCK_ICONS = [
+  { key: 'sun',        Icon: Sun        },
+  { key: 'code',       Icon: Code2      },
+  { key: 'coffee',     Icon: Coffee     },
+  { key: 'book',       Icon: BookOpen   },
+  { key: 'utensils',   Icon: Utensils   },
+  { key: 'terminal-2', Icon: Terminal   },
+  { key: 'send',       Icon: Send       },
+  { key: 'pencil',     Icon: PenLine    },
+  { key: 'bolt',       Icon: Zap        },
+  { key: 'moon',       Icon: Moon       },
+  { key: 'brain',      Icon: Brain      },
+  { key: 'clock',      Icon: Clock      },
+  { key: 'laptop',     Icon: Laptop2    },
+  { key: 'flame',      Icon: Flame      },
+  { key: 'target',     Icon: Target     },
+  { key: 'dumbbell',   Icon: Dumbbell   },
+  { key: 'music',      Icon: Music      },
+  { key: 'file',       Icon: FileText   },
+  { key: 'globe',      Icon: Globe      },
+  { key: 'star',       Icon: Star       },
+]
 
 /* ─── shared style helpers ─────────────────────────────── */
 const LABEL = {
@@ -131,6 +154,66 @@ function GeneralTab({ local, setLocal }) {
   )
 }
 
+/* ─── IconPicker ────────────────────────────────────────── */
+function IconPicker({ value, onChange }) {
+  const [open, setOpen] = useState(false)
+  const CurrentIcon = BLOCK_ICONS.find(i => i.key === value)?.Icon || Sun
+
+  return (
+    <div style={{ position: 'relative', flexShrink: 0 }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        title="Change icon"
+        style={{
+          width: 32, height: 32, borderRadius: 8,
+          background: open ? '#f0eaf7' : '#faf8ff',
+          border: `1.5px solid ${open ? '#c4a8ff' : '#f0eaf7'}`,
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#8b6fc0', transition: 'all 0.15s', flexShrink: 0,
+        }}
+        onMouseEnter={e => { if (!open) e.currentTarget.style.borderColor = '#e0d6f0' }}
+        onMouseLeave={e => { if (!open) e.currentTarget.style.borderColor = '#f0eaf7' }}
+      >
+        <CurrentIcon size={15} />
+      </button>
+      {open && (
+        <>
+          <div
+            onClick={() => setOpen(false)}
+            style={{ position: 'fixed', inset: 0, zIndex: 29 }}
+          />
+          <div style={{
+            position: 'absolute', top: '100%', left: 0, zIndex: 30, marginTop: 4,
+            background: '#fff', border: '1.5px solid #f0eaf7', borderRadius: 12,
+            boxShadow: '0 4px 20px rgba(124,92,191,0.14)', padding: 8,
+            display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 3,
+            width: 176,
+          }}>
+            {BLOCK_ICONS.map(({ key, Icon }) => (
+              <button
+                key={key}
+                onClick={() => { onChange(key); setOpen(false) }}
+                title={key}
+                style={{
+                  width: 30, height: 30, borderRadius: 6, border: 'none',
+                  background: value === key ? '#f0eaf7' : 'none',
+                  color: value === key ? '#7c5cbf' : '#8b6fc0',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'background 0.1s',
+                }}
+                onMouseEnter={e => { if (value !== key) e.currentTarget.style.background = '#faf8ff' }}
+                onMouseLeave={e => { if (value !== key) e.currentTarget.style.background = 'none' }}
+              >
+                <Icon size={14} />
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 /* ─── ScheduleTab ───────────────────────────────────────── */
 function ScheduleTab({ local, setLocal }) {
   function upd(id, f, v) {
@@ -156,8 +239,9 @@ function ScheduleTab({ local, setLocal }) {
           borderRadius: '4px 12px 12px 4px',
           padding: '12px 14px', marginBottom: 8,
         }}>
-          {/* Row 1: label + delete */}
+          {/* Row 1: icon + label + delete */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <IconPicker value={block.icon || 'sun'} onChange={v => upd(block.id, 'icon', v)} />
             <Inline
               value={block.label}
               onChange={e => upd(block.id, 'label', e.target.value)}

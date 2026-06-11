@@ -1,11 +1,14 @@
 import { useRef, useEffect, useState } from 'react'
 import { useCurrentBlock } from '../hooks/useCurrentBlock'
-import { Sun, Code2, Coffee, BookOpen, Utensils, Terminal, Send, PenLine, Zap } from 'lucide-react'
+import { Sun, Code2, Coffee, BookOpen, Utensils, Terminal, Send, PenLine, Zap, Moon, Brain, Clock, Laptop2, Flame, Target, Dumbbell, Music, FileText, Globe, Star } from 'lucide-react'
 
 const ICON_MAP = {
   sun: Sun, code: Code2, coffee: Coffee, book: BookOpen,
   utensils: Utensils, 'terminal-2': Terminal, terminal: Terminal,
   send: Send, pencil: PenLine, bolt: Zap,
+  moon: Moon, brain: Brain, clock: Clock, laptop: Laptop2,
+  flame: Flame, target: Target, dumbbell: Dumbbell,
+  music: Music, file: FileText, globe: Globe, star: Star,
 }
 
 function toMin(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m }
