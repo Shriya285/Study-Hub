@@ -29,6 +29,51 @@ function fmt(date) {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
+function inline(str) {
+  return str
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+}
+
+function mdToHtml(text) {
+  if (!text) return ''
+  const lines = text.split('\n')
+  let html = ''
+  let inUl = false
+  let inOl = false
+
+  function closeList() {
+    if (inUl) { html += '</ul>'; inUl = false }
+    if (inOl) { html += '</ol>'; inOl = false }
+  }
+
+  for (const line of lines) {
+    const ulM = line.match(/^[-•*]\s+(.*)/)
+    const olM = line.match(/^\d+\.\s+(.*)/)
+    if (ulM) {
+      if (inOl) { html += '</ol>'; inOl = false }
+      if (!inUl) { html += '<ul>'; inUl = true }
+      html += `<li>${inline(ulM[1])}</li>`
+    } else if (olM) {
+      if (inUl) { html += '</ul>'; inUl = false }
+      if (!inOl) { html += '<ol>'; inOl = true }
+      html += `<li>${inline(olM[1])}</li>`
+    } else {
+      closeList()
+      if (line.trim() === '') {
+        if (!html.endsWith('<br>')) html += '<br>'
+      } else {
+        html += `<p>${inline(line)}</p>`
+      }
+    }
+  }
+  closeList()
+  html = html.replace(/(<br>)+$/, '').replace(/^(<br>)+/, '')
+  return html
+}
+
 function LoadingDots() {
   return (
     <div style={{ display: 'flex', gap: 4, padding: '4px 2px' }}>
@@ -153,16 +198,31 @@ export default function ChatBot({ schedule, questsDone, questsTotal, pomCount, d
           <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
             {messages.map((msg, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                <div style={{
-                  maxWidth: '82%',
-                  background: msg.role === 'user' ? 'linear-gradient(135deg, #b794f4, #e88d67)' : '#faf8ff',
-                  color: msg.role === 'user' ? '#ffffff' : '#5c4a7e',
-                  borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                  padding: '9px 13px', fontSize: 13, lineHeight: 1.55,
-                  whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                }}>
-                  {msg.content}
-                </div>
+                {msg.role === 'user' ? (
+                  <div style={{
+                    maxWidth: '82%',
+                    background: 'linear-gradient(135deg, #b794f4, #e88d67)',
+                    color: '#ffffff',
+                    borderRadius: '16px 16px 4px 16px',
+                    padding: '9px 13px', fontSize: 13, lineHeight: 1.55,
+                    whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                  }}>
+                    {msg.content}
+                  </div>
+                ) : (
+                  <div
+                    className="chat-md"
+                    dangerouslySetInnerHTML={{ __html: mdToHtml(msg.content) }}
+                    style={{
+                      maxWidth: '88%',
+                      background: '#faf8ff',
+                      color: '#5c4a7e',
+                      borderRadius: '16px 16px 16px 4px',
+                      padding: '9px 13px', fontSize: 13,
+                      wordBreak: 'break-word',
+                    }}
+                  />
+                )}
                 <span style={{ fontSize: 10, color: '#c0aed8', marginTop: 3, padding: '0 4px' }}>
                   {fmt(msg.time)}
                 </span>
