@@ -414,7 +414,10 @@ export default function SettingsDrawer({ open, onClose, settings, onSave, onRese
     setLocal(settings)
   }, [settings, open])
 
-  function save() { onSave(local); onClose() }
+  function save() {
+    onSave(local)
+    onClose()
+  }
 
   return (
     <>

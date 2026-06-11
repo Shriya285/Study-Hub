@@ -1,4 +1,4 @@
-import { Code2, ListChecks, Laptop, BookOpen, Briefcase, FileText } from 'lucide-react'
+import { Code2, ListChecks, Laptop, BookOpen, Briefcase, FileText, School, Rocket } from 'lucide-react'
 
 const ICON_MAP = {
   'code':          Code2,
@@ -6,9 +6,14 @@ const ICON_MAP = {
   'device-laptop': Laptop,
   'laptop':        Laptop,
   'book':          BookOpen,
+  'school':        School,
+  'rocket':        Rocket,
   'briefcase':     Briefcase,
   'file-text':     FileText,
 }
+
+/* Cisco Prep gets a highlight border per spec */
+const HIGHLIGHT_LABELS = ['Cisco Prep']
 
 export default function QuickLaunch({ resources }) {
   return (
@@ -20,17 +25,18 @@ export default function QuickLaunch({ resources }) {
       <p style={{
         fontSize: 10, fontWeight: 500, color: '#c0aed8',
         letterSpacing: '0.08em', textTransform: 'uppercase',
-        marginBottom: 10, margin: '0 0 10px',
+        margin: '0 0 10px',
       }}>
         Quick Launch
       </p>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(6, 1fr)',
+        gridTemplateColumns: 'repeat(4, 1fr)',
         gap: 6,
       }}>
-        {resources.slice(0, 6).map(r => {
+        {resources.slice(0, 8).map(r => {
           const Icon = ICON_MAP[r.icon] ?? Code2
+          const isHighlighted = HIGHLIGHT_LABELS.includes(r.label)
 
           const card = (
             <div
@@ -39,7 +45,7 @@ export default function QuickLaunch({ resources }) {
                 alignItems: 'center', justifyContent: 'center',
                 padding: '10px 4px', gap: 5,
                 background: '#faf8ff',
-                border: '1.5px solid #f0eaf7',
+                border: `1.5px solid ${isHighlighted ? '#d8c4f0' : '#f0eaf7'}`,
                 borderRadius: 12,
                 cursor: r.url ? 'pointer' : 'default',
                 transition: 'border-color 0.15s, background 0.15s',
@@ -50,7 +56,7 @@ export default function QuickLaunch({ resources }) {
                 e.currentTarget.style.background = '#f5f1fc'
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = '#f0eaf7'
+                e.currentTarget.style.borderColor = isHighlighted ? '#d8c4f0' : '#f0eaf7'
                 e.currentTarget.style.background = '#faf8ff'
               }}
             >

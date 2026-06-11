@@ -60,3 +60,9 @@ body {
 /* Settings drawer slide-in */
 .drawer-enter { transform: translateX(100%); }
 .drawer-open  { transform: translateX(0); transition: transform 0.3s ease; }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.spin { animation: spin 1s linear infinite; }

@@ -10,10 +10,37 @@ import PomodoroTimer from './components/PomodoroTimer'
 import DailyQuests from './components/DailyQuests'
 import Trophies from './components/Trophies'
 import QuickLaunch from './components/QuickLaunch'
+import SessionGuide from './components/SessionGuide'
+import ChatBot from './components/ChatBot'
 import SettingsDrawer from './components/SettingsDrawer'
 
 function todayString() {
   return new Date().toISOString().slice(0, 10)
+}
+
+function timeToMins(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m }
+function minsToTime(m) {
+  const mm = ((m % 1440) + 1440) % 1440
+  return `${String(Math.floor(mm / 60)).padStart(2, '0')}:${String(mm % 60).padStart(2, '0')}`
+}
+
+function getSessionSchedule(schedule) {
+  if (!schedule?.length) return schedule
+  const today = todayString()
+  const key = `study_hub_login_${today}`
+  let loginStr = localStorage.getItem(key)
+  if (!loginStr) {
+    const now = new Date()
+    loginStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+    localStorage.setItem(key, loginStr)
+  }
+  const offset = timeToMins(loginStr) - timeToMins(schedule[0].start)
+  if (offset === 0) return schedule
+  return schedule.map(b => ({
+    ...b,
+    start: minsToTime(timeToMins(b.start) + offset),
+    end: minsToTime(timeToMins(b.end) + offset),
+  }))
 }
 
 function daysFromNow(n) {
@@ -28,8 +55,8 @@ function initSettings() {
     const parsed = JSON.parse(stored)
     if (!parsed.name) parsed.name = 'Shriya'
     if (!parsed.goals?.[0]?.xp) parsed.goals = DEFAULT_GOALS
-    if (!parsed.schedule?.[0]?.icon) parsed.schedule = DEFAULT_SCHEDULE
-    if (!parsed.resources?.[0]?.icon) parsed.resources = DEFAULT_RESOURCES
+    if (!parsed.schedule?.[0]?.icon || parsed.schedule[0]?.end === '08:30') parsed.schedule = DEFAULT_SCHEDULE
+    if (!parsed.resources?.[0]?.icon || parsed.resources.length < DEFAULT_RESOURCES.length) parsed.resources = DEFAULT_RESOURCES
     return parsed
   }
   const defaults = {
@@ -94,6 +121,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   const { level, progress, xpInLevel, xpToNext, leveledUp, addXP, resetXP, clearLevelUp } = useXP()
+  const sessionSchedule = getSessionSchedule(settings.schedule)
 
   useDailyReset(todayData, settings.goals, setTodayData)
 
@@ -192,14 +220,14 @@ export default function App() {
 
           {/* 3. Hero Card */}
           <HeroBanner
-            schedule={settings.schedule}
+            schedule={sessionSchedule}
             poms={todayData.poms}
             questsDone={todayData.quests?.filter(q => q.done).length ?? 0}
             questsTotal={todayData.quests?.length ?? 0}
           />
 
           {/* 4. Schedule Strip */}
-          <ScheduleStrip schedule={settings.schedule} />
+          <ScheduleStrip schedule={sessionSchedule} />
 
           {/* 5. 2-column grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
@@ -213,8 +241,19 @@ export default function App() {
           {/* 6. Quick Launch */}
           <QuickLaunch resources={settings.resources} />
 
+          {/* 7. Session Guide */}
+          <SessionGuide schedule={sessionSchedule} daysLeft={daysLeft} />
+
         </div>
       </div>
+
+      <ChatBot
+        schedule={sessionSchedule}
+        questsDone={todayData.quests?.filter(q => q.done).length ?? 0}
+        questsTotal={todayData.quests?.length ?? 0}
+        pomCount={todayData.poms}
+        daysLeft={daysLeft}
+      />
 
       <SettingsDrawer
         open={settingsOpen}
