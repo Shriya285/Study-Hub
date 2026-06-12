@@ -90,11 +90,13 @@ function initTodayData(goals) {
       return parsed
     }
   }
-  return {
+  const fresh = {
     date: todayString(),
     quests: goals.map(g => ({ id: g.id, label: g.label, xp: g.xp || 20, done: false })),
     poms: 0,
   }
+  localStorage.setItem('study_hub_today', JSON.stringify(fresh))
+  return fresh
 }
 
 function computeStreak(lastComplete, current) {
