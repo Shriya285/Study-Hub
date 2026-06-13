@@ -218,9 +218,26 @@ function IconPicker({ value, onChange }) {
 }
 
 /* ─── ScheduleTab ───────────────────────────────────────── */
+function toMins(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m }
+function calcDuration(start, end) {
+  const diff = ((toMins(end) - toMins(start)) + 1440) % 1440
+  const h = Math.floor(diff / 60), m = diff % 60
+  return h > 0 && m > 0 ? `${h}h ${m}m` : h > 0 ? `${h}h` : `${m}m`
+}
+
 function ScheduleTab({ local, setLocal }) {
   function upd(id, f, v) {
-    setLocal(l => ({ ...l, schedule: l.schedule.map(b => b.id === id ? { ...b, [f]: v } : b) }))
+    setLocal(l => ({
+      ...l,
+      schedule: l.schedule.map(b => {
+        if (b.id !== id) return b
+        const updated = { ...b, [f]: v }
+        if (f === 'start' || f === 'end') {
+          updated.durationLabel = calcDuration(updated.start, updated.end)
+        }
+        return updated
+      }),
+    }))
   }
   function add() {
     setLocal(l => ({ ...l, schedule: [...l.schedule, {
