@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowLeft, Bold, Italic, Underline, List, ListOrdered, CheckSquare, Minus } from 'lucide-react'
+import { ArrowLeft, Bold, Italic, Underline, List, ListOrdered, CheckSquare, Minus, ChevronDown } from 'lucide-react'
+
+const PRESET_COLORS = [
+  '#ef4444', '#f97316', '#eab308', '#22c55e',
+  '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899',
+  '#ffffff', '#d1d5db', '#6b7280', '#111827',
+]
 
 const DEFAULT_SUBJECTS = [
   'General', 'Warm Up', 'DSA Block 1', 'DSA Block 2', 'CS Fundamentals',
@@ -11,9 +17,12 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
   const [title, setTitle] = useState(note?.title || '')
   const [showDrop, setShowDrop] = useState(false)
   const [customInput, setCustomInput] = useState('')
+  const [showColorPicker, setShowColorPicker] = useState(false)
+  const [activeColor, setActiveColor] = useState('#ef4444')
   const editorRef = useRef(null)
   const saveTimer = useRef(null)
   const savedSelRef = useRef(null)
+  const colorBtnRef = useRef(null)
 
   useEffect(() => {
     if (editorRef.current) {
@@ -74,6 +83,19 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
   function saveSelForFormat() {
     const sel = window.getSelection()
     savedSelRef.current = sel?.rangeCount ? sel.getRangeAt(0).cloneRange() : null
+  }
+
+  function applyColor(color) {
+    setActiveColor(color)
+    setShowColorPicker(false)
+    if (savedSelRef.current) {
+      const sel = window.getSelection()
+      sel.removeAllRanges()
+      sel.addRange(savedSelRef.current)
+    }
+    document.execCommand('foreColor', false, color)
+    editorRef.current?.focus()
+    autoSave()
   }
 
   function applyFormat(blockTag) {
@@ -237,6 +259,63 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
           <option value="h2">Heading</option>
           <option value="h3">Subheading</option>
         </select>
+
+        <div style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
+
+        {/* Font color picker */}
+        <div style={{ position: 'relative' }}>
+          <button
+            ref={colorBtnRef}
+            title="Font color"
+            onMouseDown={e => { e.preventDefault(); saveSelForFormat(); setShowColorPicker(v => !v) }}
+            style={{
+              height: 28, borderRadius: 6, border: '1.5px solid var(--border)',
+              background: 'var(--surface2)', color: 'var(--purple-d)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 3, padding: '0 6px',
+              transition: 'background 0.1s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--border)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'var(--surface2)'}
+          >
+            <span style={{ fontSize: 12, fontWeight: 700, lineHeight: 1, borderBottom: `2.5px solid ${activeColor}` }}>A</span>
+            <ChevronDown size={10} />
+          </button>
+          {showColorPicker && (
+            <>
+              <div onClick={() => setShowColorPicker(false)} style={{ position: 'fixed', inset: 0, zIndex: 29 }} />
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, zIndex: 30, marginTop: 4,
+                background: 'var(--surface)', border: '1.5px solid var(--border)', borderRadius: 10,
+                boxShadow: '0 4px 20px rgba(124,92,191,0.14)', padding: 8,
+              }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 4, marginBottom: 6 }}>
+                  {PRESET_COLORS.map(c => (
+                    <button
+                      key={c}
+                      onMouseDown={e => { e.preventDefault(); applyColor(c) }}
+                      title={c}
+                      style={{
+                        width: 20, height: 20, borderRadius: 4, border: activeColor === c ? '2px solid var(--purple-bright)' : '1.5px solid var(--border)',
+                        background: c, cursor: 'pointer', padding: 0,
+                        outline: 'none',
+                      }}
+                    />
+                  ))}
+                </div>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 10, color: 'var(--fg3)' }}>Custom</span>
+                  <input
+                    type="color"
+                    defaultValue={activeColor}
+                    onMouseDown={e => { saveSelForFormat() }}
+                    onChange={e => applyColor(e.target.value)}
+                    style={{ width: 28, height: 22, border: 'none', padding: 0, cursor: 'pointer', background: 'none' }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         <div style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
 
