@@ -156,6 +156,27 @@ body {
 .note-editor-area h3 { font-size: 14px; font-weight: 600; color: var(--fg2); margin: 4px 0 2px; line-height: 1.5; }
 .note-editor-area p  { margin: 2px 0; }
 
+/* Note editor font colors — adapt to light/dark theme */
+.nc-red    { color: #dc2626; }
+.nc-orange { color: #c2410c; }
+.nc-yellow { color: #a16207; }
+.nc-green  { color: #15803d; }
+.nc-teal   { color: #0e7490; }
+.nc-blue   { color: #1d4ed8; }
+.nc-purple { color: #7c3aed; }
+.nc-pink   { color: #be185d; }
+.nc-gray   { color: #6b7280; }
+
+html[data-theme="dark"] .nc-red    { color: #fca5a5; }
+html[data-theme="dark"] .nc-orange { color: #fdba74; }
+html[data-theme="dark"] .nc-yellow { color: #fde047; }
+html[data-theme="dark"] .nc-green  { color: #86efac; }
+html[data-theme="dark"] .nc-teal   { color: #67e8f9; }
+html[data-theme="dark"] .nc-blue   { color: #93c5fd; }
+html[data-theme="dark"] .nc-purple { color: #c4b5fd; }
+html[data-theme="dark"] .nc-pink   { color: #f9a8d4; }
+html[data-theme="dark"] .nc-gray   { color: #9ca3af; }
+
 /* Chat message markdown */
 .chat-md p             { margin: 0 0 5px; line-height: 1.55; }
 .chat-md p:last-child  { margin: 0; }

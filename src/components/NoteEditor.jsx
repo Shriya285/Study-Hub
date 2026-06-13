@@ -2,9 +2,15 @@ import { useState, useRef, useEffect } from 'react'
 import { ArrowLeft, Bold, Italic, Underline, List, ListOrdered, CheckSquare, Minus, ChevronDown } from 'lucide-react'
 
 const PRESET_COLORS = [
-  '#ef4444', '#f97316', '#eab308', '#22c55e',
-  '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899',
-  '#ffffff', '#d1d5db', '#6b7280', '#111827',
+  { name: 'red',    label: 'Red',    light: '#dc2626', dark: '#fca5a5' },
+  { name: 'orange', label: 'Orange', light: '#c2410c', dark: '#fdba74' },
+  { name: 'yellow', label: 'Yellow', light: '#a16207', dark: '#fde047' },
+  { name: 'green',  label: 'Green',  light: '#15803d', dark: '#86efac' },
+  { name: 'teal',   label: 'Teal',   light: '#0e7490', dark: '#67e8f9' },
+  { name: 'blue',   label: 'Blue',   light: '#1d4ed8', dark: '#93c5fd' },
+  { name: 'purple', label: 'Purple', light: '#7c3aed', dark: '#c4b5fd' },
+  { name: 'pink',   label: 'Pink',   light: '#be185d', dark: '#f9a8d4' },
+  { name: 'gray',   label: 'Gray',   light: '#6b7280', dark: '#9ca3af' },
 ]
 
 const DEFAULT_SUBJECTS = [
@@ -18,7 +24,7 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
   const [showDrop, setShowDrop] = useState(false)
   const [customInput, setCustomInput] = useState('')
   const [showColorPicker, setShowColorPicker] = useState(false)
-  const [activeColor, setActiveColor] = useState('#ef4444')
+  const [activeColor, setActiveColor] = useState('red')
   const editorRef = useRef(null)
   const saveTimer = useRef(null)
   const savedSelRef = useRef(null)
@@ -85,15 +91,26 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
     savedSelRef.current = sel?.rangeCount ? sel.getRangeAt(0).cloneRange() : null
   }
 
-  function applyColor(color) {
-    setActiveColor(color)
+  function applyColor(colorName) {
+    setActiveColor(colorName)
     setShowColorPicker(false)
-    if (savedSelRef.current) {
-      const sel = window.getSelection()
-      sel.removeAllRanges()
-      sel.addRange(savedSelRef.current)
+    const sel = window.getSelection()
+    const range = savedSelRef.current
+    if (!range || range.collapsed) {
+      editorRef.current?.focus()
+      return
     }
-    document.execCommand('foreColor', false, color)
+    sel.removeAllRanges()
+    sel.addRange(range)
+    const span = document.createElement('span')
+    span.className = `nc-${colorName}`
+    try {
+      range.surroundContents(span)
+    } catch {
+      const contents = range.extractContents()
+      span.appendChild(contents)
+      range.insertNode(span)
+    }
     editorRef.current?.focus()
     autoSave()
   }
@@ -277,7 +294,7 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
             onMouseEnter={e => e.currentTarget.style.background = 'var(--border)'}
             onMouseLeave={e => e.currentTarget.style.background = 'var(--surface2)'}
           >
-            <span style={{ fontSize: 12, fontWeight: 700, lineHeight: 1, borderBottom: `2.5px solid ${activeColor}` }}>A</span>
+            <span className={`nc-${activeColor}`} style={{ fontSize: 12, fontWeight: 700, lineHeight: 1, borderBottom: '2.5px solid currentColor' }}>A</span>
             <ChevronDown size={10} />
           </button>
           {showColorPicker && (
@@ -286,31 +303,25 @@ export default function NoteEditor({ note, onSave, onBack, customSubjects = [], 
               <div style={{
                 position: 'absolute', top: '100%', left: 0, zIndex: 30, marginTop: 4,
                 background: 'var(--surface)', border: '1.5px solid var(--border)', borderRadius: 10,
-                boxShadow: '0 4px 20px rgba(124,92,191,0.14)', padding: 8,
+                boxShadow: '0 4px 20px rgba(124,92,191,0.14)', padding: 8, minWidth: 160,
               }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 4, marginBottom: 6 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3 }}>
                   {PRESET_COLORS.map(c => (
                     <button
-                      key={c}
-                      onMouseDown={e => { e.preventDefault(); applyColor(c) }}
-                      title={c}
+                      key={c.name}
+                      onMouseDown={e => { e.preventDefault(); applyColor(c.name) }}
+                      title={c.label}
                       style={{
-                        width: 20, height: 20, borderRadius: 4, border: activeColor === c ? '2px solid var(--purple-bright)' : '1.5px solid var(--border)',
-                        background: c, cursor: 'pointer', padding: 0,
-                        outline: 'none',
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        borderRadius: 6, border: activeColor === c.name ? '1.5px solid var(--purple-bright)' : '1.5px solid transparent',
+                        background: activeColor === c.name ? 'var(--surface3)' : 'none',
+                        padding: '4px 6px', cursor: 'pointer', textAlign: 'left',
                       }}
-                    />
+                    >
+                      <span style={{ width: 12, height: 12, borderRadius: '50%', background: c.light, flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
+                      <span style={{ fontSize: 11, color: 'var(--fg2)' }}>{c.label}</span>
+                    </button>
                   ))}
-                </div>
-                <div style={{ borderTop: '1px solid var(--border)', paddingTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 10, color: 'var(--fg3)' }}>Custom</span>
-                  <input
-                    type="color"
-                    defaultValue={activeColor}
-                    onMouseDown={e => { saveSelForFormat() }}
-                    onChange={e => applyColor(e.target.value)}
-                    style={{ width: 28, height: 22, border: 'none', padding: 0, cursor: 'pointer', background: 'none' }}
-                  />
                 </div>
               </div>
             </>
