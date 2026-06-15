@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Palette, Play, Pause, RotateCcw, Music } from 'lucide-react'
+import { ArrowLeft, Palette, Play, Pause, RotateCcw, Music, Leaf } from 'lucide-react'
 import { useCurrentBlock } from '../hooks/useCurrentBlock'
 import { MODE_LABELS } from '../hooks/useTimer'
 import AmbientPlayer from './AmbientPlayer'
+import PlantIsland from './PlantIsland'
+import { PLANT_LABELS } from '../constants/plantSprites'
+
+const PLANT_TYPES = ['cactus', 'pine', 'flower', 'bamboo']
+const PLANT_EMOJIS = { cactus: '🌵', pine: '🌲', flower: '🌸', bamboo: '🎍' }
+const TARGET_POMS = 8
 
 const RADIUS = 52
 const CIRC = 2 * Math.PI * RADIUS
@@ -176,6 +182,8 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
   const { current } = useCurrentBlock(schedule)
   const [scene, setScene] = useState(() => localStorage.getItem('study_hub_focus_scene') || 'lofi')
   const [showPicker, setShowPicker] = useState(false)
+  const [plantType, setPlantType] = useState(() => localStorage.getItem('study_hub_plant_type') || 'cactus')
+  const [showPlantPicker, setShowPlantPicker] = useState(false)
   const [ambience, setAmbience] = useState(() => localStorage.getItem('study_hub_ambience') || 'off')
   const [volume, setVolume] = useState(() => Number(localStorage.getItem('study_hub_volume') || '50'))
   const [spotifyUrl, setSpotifyUrl] = useState(() => localStorage.getItem('study_hub_spotify_url') || '')
@@ -210,6 +218,14 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
     localStorage.setItem('study_hub_focus_scene', id)
     setShowPicker(false)
   }
+
+  function pickPlant(type) {
+    setPlantType(type)
+    localStorage.setItem('study_hub_plant_type', type)
+    setShowPlantPicker(false)
+  }
+
+  const plantT = Math.min(1, pomCount / TARGET_POMS)
 
   function pickAmbience(s) {
     setAmbience(s)
@@ -391,21 +407,46 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
         </div>
       </div>
 
-      {/* Scene picker button */}
-      <button
-        onClick={() => setShowPicker(p => !p)}
-        style={{
-          position: 'absolute', bottom: 80, left: 24,
-          background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)',
-          borderRadius: 10, padding: '8px 12px',
-          color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', gap: 6, fontSize: 12,
-        }}
-        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-      >
-        <Palette size={14} /> Scene
-      </button>
+      {/* Plant island — bottom-center above bottom bar */}
+      <div style={{
+        position: 'absolute',
+        bottom: 72,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        pointerEvents: 'none',
+      }}>
+        <PlantIsland plantType={plantType} t={plantT} size={200} />
+      </div>
+
+      {/* Scene + Plant picker buttons */}
+      <div style={{ position: 'absolute', bottom: 80, left: 24, display: 'flex', gap: 8 }}>
+        <button
+          onClick={() => { setShowPicker(p => !p); setShowPlantPicker(false) }}
+          style={{
+            background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)',
+            borderRadius: 10, padding: '8px 12px',
+            color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 6, fontSize: 12,
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+        >
+          <Palette size={14} /> Scene
+        </button>
+        <button
+          onClick={() => { setShowPlantPicker(p => !p); setShowPicker(false) }}
+          style={{
+            background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)',
+            borderRadius: 10, padding: '8px 12px',
+            color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 6, fontSize: 12,
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+        >
+          <Leaf size={14} /> {PLANT_EMOJIS[plantType]}
+        </button>
+      </div>
 
       {showPicker && (
         <div style={{
@@ -426,6 +467,28 @@ export default function FocusMode({ timer, schedule, pomCount, daysLeft, onClose
                 background: 'rgba(0,0,0,0.55)', fontSize: 8, fontWeight: 500,
                 color: '#fff', padding: '2px 4px', textAlign: 'center',
               }}>{s.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {showPlantPicker && (
+        <div style={{
+          position: 'absolute', bottom: 120, left: 24,
+          display: 'flex', gap: 8,
+          background: 'rgba(10,8,24,0.7)', border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 14, padding: 10,
+        }}>
+          {PLANT_TYPES.map(p => (
+            <button key={p} onClick={() => pickPlant(p)} style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              padding: '8px 12px', borderRadius: 10, border: 'none', cursor: 'pointer',
+              background: plantType === p ? 'rgba(196,168,255,0.25)' : 'transparent',
+              outline: plantType === p ? '1.5px solid rgba(196,168,255,0.5)' : '1.5px solid transparent',
+              color: 'rgba(255,255,255,0.8)',
+            }}>
+              <span style={{ fontSize: 22 }}>{PLANT_EMOJIS[p]}</span>
+              <span style={{ fontSize: 10, fontWeight: 500 }}>{PLANT_LABELS[p]}</span>
             </button>
           ))}
         </div>
