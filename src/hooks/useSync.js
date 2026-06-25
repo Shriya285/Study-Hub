@@ -12,6 +12,9 @@ const SYNC_KEYS = [
   'study_hub_session_guides',
   'study_hub_theme',
   'study_hub_custom_subjects',
+  'study_hub_last_oa_date',
+  'study_hub_oa_subject_index',
+  'study_hub_oa_seen_problems',
 ]
 
 export function getSyncId() {

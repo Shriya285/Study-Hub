@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { useSync } from './hooks/useSync'
+import OAGatePage from './pages/OAGatePage'
 import { DEFAULT_SCHEDULE, DEFAULT_GOALS, DEFAULT_RESOURCES, DEFAULT_TROPHIES } from './constants/defaults'
 import { useDailyReset } from './hooks/useDailyReset'
 import { useXP } from './hooks/useXP'
@@ -132,6 +133,9 @@ export default function App() {
   const sessionSchedule = getSessionSchedule(settings.schedule)
   const [focusOpen, setFocusOpen] = useState(false)
   const [notesOpen, setNotesOpen] = useState(false)
+  const [oaDone, setOaDone] = useState(
+    () => localStorage.getItem('study_hub_last_oa_date') === todayString()
+  )
 
   useDailyReset(todayData, settings.goals, setTodayData)
 
@@ -225,6 +229,14 @@ export default function App() {
       poms: 0,
     })
     syncPush()
+  }
+
+  if (!oaDone) {
+    return (
+      <ThemeProvider>
+        <OAGatePage onComplete={() => setOaDone(true)} />
+      </ThemeProvider>
+    )
   }
 
   return (
